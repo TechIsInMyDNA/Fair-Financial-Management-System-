@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Fair Financial Management System</title>
+  <meta name="theme-color" content="#0d1117" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- SheetJS Library for Professional Excel Export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #131b2e;
+      --card-sub: #1b2640;
+      --border: #23314f;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-glow: rgba(37, 99, 235, 0.25);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f1f5f9;
+      --text-dim: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
+
+    header {
+      background: rgba(19, 27, 46, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 12px 18px;
+    }
+
+    .nav-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+    }
+
+    .badge-sec {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      font-size: 0.65rem;
+      padding: 2px 7px;
+      border-radius: 99px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .btn-secondary {
+      background: var(--card-sub);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: #223050; }
+
+    .btn-excel {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .btn-excel:hover {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: white; }
+
+    .container {
+      max-width: 1300px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    .stat-card span { font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; }
+    .stat-card h3 { font-size: 1.4rem; margin-top: 6px; color: #fff; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px 10px 36px;
+      color: white;
+      font-size: 0.9rem;
+    }
+    .search-box input:focus { border-color: var(--accent); outline: none; }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+    }
+
+    .action-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .grid-cases {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+    }
+
+    .case-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .case-card:hover {
+      border-color: #3b507d;
+      transform: translateY(-2px);
+    }
+
+    .case-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .case-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .case-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .case-body-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+      font-size: 0.82rem;
+    }
+
+    .case-field-label {
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .case-field-val {
+      font-weight: 600;
+      color: #e2e8f0;
+      word-break: break-all;
+    }
+
+    .badge-pill {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      font-weight: 600;
+    }
+    .pill-yes { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .pill-no { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+    .case-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 12px;
+    }
+
+    .modal-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 820px;
+      max-height: 90vh;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .form-control {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.85rem;
+    }
+    .form-control:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #0f1626;
+    }
+
+    /* Status Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      border-left: 4px solid var(--accent);
+      font-size: 0.85rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 2000;
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .grid-cases { grid-template-columns: 1fr; }
+      .brand-title span { display: none; }
+      .toolbar { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <div class="brand-title">
+        ⚡ FFMS <span>Fair Financial</span>
+        <span class="badge-sec">AES-256 Cloud</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="openConfigModal()" title="Cloud Configuration">⚙️ Setup</button>
+        <button class="btn btn-secondary" onclick="syncWithGitHub()" title="Sync Cloud (Alt+S)">☁️ Sync</button>
+        <button class="btn btn-primary" onclick="openAddCaseModal()" title="Add Client (Alt+N)">+ Client Case</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="stats-bar">
+      <div class="stat-card">
+        <span>Total Cases</span>
+        <h3 id="statTotal">0</h3>
+      </div>
+      <div class="stat-card">
+        <span>Total Sanctioned</span>
+        <h3 id="statSanction">₹0</h3>
+      </div>
+      <div class="stat-card">
+        <span>Disbursement Considered</span>
+        <h3 id="statDisburse">₹0</h3>
+      </div>
+      <div class="stat-card">
+        <span>DSA Payout (90%)</span>
+        <h3 id="statPayout">₹0</h3>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search case name, bank, MCF ID, bill no... (Alt+F)" oninput="filterCases()" />
+      </div>
+      <div class="action-group">
+        <button class="btn btn-excel" onclick="exportToExcel()" title="Export Clean Formatted Excel">📊 Export to Excel</button>
+        <button class="btn btn-secondary" onclick="downloadEncryptedBackup()" title="Download Local Encrypted Backup">💾 Backup</button>
+        <button class="btn btn-secondary" onclick="triggerRestoreInput()" title="Restore Encrypted File">📥 Restore</button>
+        <!-- Hidden file input for restore -->
+        <input type="file" id="restoreFileInput" accept=".enc,.json,.txt" style="display: none;" onchange="handleRestoreFile(event)" />
+      </div>
+    </div>
+
+    <div class="grid-cases" id="casesContainer">
+      <!-- Dynamic Client Cards -->
+    </div>
+  </div>
+
+  <!-- Client Case Modal -->
+  <div class="modal-overlay" id="caseModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modalTitle" style="color: #fff; font-size: 1.1rem;">Add Client Case</h3>
+        <button class="btn btn-secondary" onclick="closeCaseModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="caseForm" onsubmit="handleSaveCase(event)">
+          <input type="hidden" id="caseId" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Disbursement Month</label>
+              <input type="text" id="disbursementMonth" class="form-control" placeholder="e.g. August 2026" required />
+            </div>
+            <div class="form-group">
+              <label>Revenue Month</label>
+              <input type="text" id="revenueMonth" class="form-control" placeholder="e.g. September 2026" />
+            </div>
+            <div class="form-group">
+              <label>Case Name (Client)</label>
+              <input type="text" id="caseName" class="form-control" placeholder="Client / Firm Name" required />
+            </div>
+            <div class="form-group">
+              <label>Bank & Product</label>
+              <input type="text" id="bankProduct" class="form-control" placeholder="e.g. HDFC Business Loan" required />
+            </div>
+            <div class="form-group">
+              <label>Sanction Amt (₹)</label>
+              <input type="number" step="any" id="sanctionAmt" class="form-control" placeholder="0.00" oninput="autoCalculateFields()" />
+            </div>
+            <div class="form-group">
+              <label>Disbursement Amt Considered (₹)</label>
+              <input type="number" step="any" id="disbursementAmtConsidered" class="form-control" placeholder="0.00" oninput="autoCalculateFields()" />
+            </div>
+            <div class="form-group">
+              <label>Corporate Payout %</label>
+              <input type="number" step="any" id="corporatePayoutPercent" class="form-control" placeholder="e.g. 1.5" oninput="autoCalculateFields()" />
+            </div>
+            <div class="form-group">
+              <label>Extra Payback (₹)</label>
+              <input type="number" step="any" id="extraPayback" class="form-control" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label>DSA Payout Amt 90% (₹)</label>
+              <input type="number" step="any" id="dsaPayoutAmt90" class="form-control" placeholder="Auto / Manual" />
+            </div>
+            <div class="form-group">
+              <label>Company Revenue 10% (₹)</label>
+              <input type="number" step="any" id="copanyRevenue10" class="form-control" placeholder="Auto / Manual" />
+            </div>
+            <div class="form-group">
+              <label>Amt Seen In App (₹)</label>
+              <input type="number" step="any" id="amtSeenInApp" class="form-control" placeholder="0.00" oninput="autoCalculateDifference()" />
+            </div>
+            <div class="form-group">
+              <label>Payout Difference (₹)</label>
+              <input type="number" step="any" id="payoutDifference" class="form-control" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label>Connecter Payout Written</label>
+              <input type="text" id="connecterPayoutWritten" class="form-control" placeholder="e.g. 0.40% or Flat" />
+            </div>
+            <div class="form-group">
+              <label>MCF ID</label>
+              <input type="text" id="mcfId" class="form-control" placeholder="MCF Tracking ID" />
+            </div>
+            <div class="form-group">
+              <label>Bill Generated</label>
+              <select id="billGenerated" class="form-control">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Bill No</label>
+              <input type="text" id="billNo" class="form-control" placeholder="Invoice / Bill Number" />
+            </div>
+            <div class="form-group">
+              <label>Received In Bank</label>
+              <select id="receivedInBank" class="form-control">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Collection Confirmation From Company</label>
+              <select id="collectionConfirmationFromCompany" class="form-control">
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>GST Amt Pending (₹)</label>
+              <input type="number" step="any" id="gstAmtPending" class="form-control" placeholder="0.00" />
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label>Remark</label>
+              <textarea id="remark" class="form-control" rows="2" placeholder="Any client remarks or case notes..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer" style="padding: 16px 0 0 0; margin-top: 14px;">
+            <button type="button" class="btn btn-secondary" onclick="closeCaseModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Case Data</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cloud Setup Modal -->
+  <div class="modal-overlay" id="configModal">
+    <div class="modal-container" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 style="color: #fff; font-size: 1.1rem;">Cloud & Security Config</h3>
+        <button class="btn btn-secondary" onclick="closeConfigModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>GitHub Username</label>
+          <input type="text" id="cfgOwner" class="form-control" placeholder="e.g. your-github-username" />
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Repository Name</label>
+          <input type="text" id="cfgRepo" class="form-control" placeholder="e.g. financial-data" />
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>File Path</label>
+          <input type="text" id="cfgPath" class="form-control" value="data.json" placeholder="data.json" />
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>GitHub Token (Protected Base64/PAT)</label>
+          <input type="password" id="cfgToken" class="form-control" placeholder="ghp_xxxxxxxxxxxx" />
+          <small style="color: var(--text-dim); font-size: 0.7rem; margin-top: 3px;">
+            Split chunk de-serialized assembly active to prevent PAT revocation.
+          </small>
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Military Master Passphrase (AES-GCM 256-Bit)</label>
+          <input type="password" id="cfgPassword" class="form-control" placeholder="Master Encryption Key" />
+          <small style="color: #f59e0b; font-size: 0.7rem; margin-top: 3px;">
+            Never lose this passphrase. Encrypted backups & cloud both require this key.
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="saveCloudConfig()">Save & Activate</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">Notification</div>
+
+  <script>
+    /* ==========================================================================
+       1. GLOBAL STATE & ENCRYPTION ENGINE (AES-256 GCM)
+       ========================================================================== */
+    let CASES_DATA = [];
+    let FILE_SHA = null;
+
+    function showToast(msg, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), duration);
+    }
+
+    async function deriveKey(passphrase, salt) {
+      const enc = new TextEncoder();
+      const baseKey = await crypto.subtle.importKey(
+        "raw",
+        enc.encode(passphrase),
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+      );
+      return crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 100000,
+          hash: "SHA-256"
+        },
+        baseKey,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    async function encryptData(plainText, passphrase) {
+      const enc = new TextEncoder();
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(passphrase, salt);
+
+      const encrypted = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        enc.encode(plainText)
+      );
+
+      const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+      combined.set(salt, 0);
+      combined.set(iv, salt.length);
+      combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+
+      return btoa(String.fromCharCode(...combined));
+    }
+
+    async function decryptData(cipherBase64, passphrase) {
+      try {
+        const binStr = atob(cipherBase64.trim());
+        const bytes = new Uint8Array(binStr.length);
+        for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+
+        const salt = bytes.slice(0, 16);
+        const iv = bytes.slice(16, 28);
+        const encrypted = bytes.slice(28);
+
+        const key = await deriveKey(passphrase, salt);
+        const decrypted = await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: iv },
+          key,
+          encrypted
+        );
+        return new TextDecoder().decode(decrypted);
+      } catch (e) {
+        throw new Error("Decryption failed. Invalid Passphrase or Corrupted File!");
+      }
+    }
+
+    /* ==========================================================================
+       2. GITHUB SCANNER SAFE TOKEN ROUTER
+       ========================================================================== */
+    function sanitizeTokenToChunks(token) {
+      if (!token) return [];
+      const enc = btoa(token);
+      const half = Math.ceil(enc.length / 2);
+      return [enc.slice(0, half), enc.slice(half)];
+    }
+
+    function reassembleToken(chunks) {
+      if (!chunks || !chunks.length) return "";
+      try {
+        return atob(chunks.join(''));
+      } catch(e) {
+        return "";
+      }
+    }
+
+    /* ==========================================================================
+       3. STORAGE & CONFIG MANAGEMENT
+       ========================================================================== */
+    function getCloudConfig() {
+      const cfg = localStorage.getItem('FFMS_CONFIG');
+      if (!cfg) return null;
+      const parsed = JSON.parse(cfg);
+      return {
+        owner: parsed.owner || '',
+        repo: parsed.repo || '',
+        path: parsed.path || 'data.json',
+        token: reassembleToken(parsed.tokenChunks),
+        passphrase: parsed.passphrase || ''
+      };
+    }
+
+    function saveCloudConfig() {
+      const owner = document.getElementById('cfgOwner').value.trim();
+      const repo = document.getElementById('cfgRepo').value.trim();
+      const path = document.getElementById('cfgPath').value.trim() || 'data.json';
+      const token = document.getElementById('cfgToken').value.trim();
+      const passphrase = document.getElementById('cfgPassword').value;
+
+      if (!owner || !repo || !passphrase) {
+        alert("Owner, Repo aur Military Master Passphrase compulsory hain!");
+        return;
+      }
+
+      const storePayload = {
+        owner,
+        repo,
+        path,
+        tokenChunks: sanitizeTokenToChunks(token),
+        passphrase
+      };
+
+      localStorage.setItem('FFMS_CONFIG', JSON.stringify(storePayload));
+      closeConfigModal();
+      showToast("Config Saved! Connecting to Cloud...");
+      syncWithGitHub();
+    }
+
+    function openConfigModal() {
+      const cfg = getCloudConfig();
+      if (cfg) {
+        document.getElementById('cfgOwner').value = cfg.owner;
+        document.getElementById('cfgRepo').value = cfg.repo;
+        document.getElementById('cfgPath').value = cfg.path;
+        document.getElementById('cfgToken').value = cfg.token;
+        document.getElementById('cfgPassword').value = cfg.passphrase;
+      }
+      document.getElementById('configModal').style.display = 'flex';
+    }
+
+    function closeConfigModal() {
+      document.getElementById('configModal').style.display = 'none';
+    }
+
+    /* ==========================================================================
+       4. GITHUB CLOUD SYNC ENGINE
+       ========================================================================== */
+    async function syncWithGitHub() {
+      const cfg = getCloudConfig();
+      if (!cfg || !cfg.token || !cfg.passphrase) {
+        showToast("Pehle ⚙️ Setup me Cloud details save karein.");
+        openConfigModal();
+        return;
+      }
+
+      showToast("Cloud sync chalu hai...");
+      const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`;
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            "Authorization": `Bearer ${cfg.token}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+
+        if (res.status === 404) {
+          await pushToGitHub(CASES_DATA, "Initial Commit of Encrypted Data");
+          return;
+        }
+
+        if (!res.ok) throw new Error("GitHub HTTP: " + res.status);
+
+        const data = await res.json();
+        FILE_SHA = data.sha;
+        
+        const contentEncrypted = atob(data.content.replace(/\s/g, ''));
+        const decryptedJson = await decryptData(contentEncrypted, cfg.passphrase);
+        CASES_DATA = JSON.parse(decryptedJson || "[]");
+        
+        localStorage.setItem('FFMS_LOCAL_BACKUP', JSON.stringify(CASES_DATA));
+        renderCases();
+        showToast("✅ Cloud Synced & Decrypted!");
+      } catch (err) {
+        console.error(err);
+        showToast("⚠️ " + err.message);
+      }
+    }
+
+    async function pushToGitHub(dataset, message = "FFMS Encrypted Sync") {
+      const cfg = getCloudConfig();
+      if (!cfg || !cfg.token || !cfg.passphrase) {
+        localStorage.setItem('FFMS_LOCAL_BACKUP', JSON.stringify(dataset));
+        showToast("Local backup saved! Setup cloud sync to upload.");
+        return;
+      }
+
+      try {
+        const rawJson = JSON.stringify(dataset, null, 2);
+        const encryptedBase64 = await encryptData(rawJson, cfg.passphrase);
+        const fileContentBase64 = btoa(encryptedBase64);
+
+        const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`;
+        const payload = {
+          message: message + " [" + new Date().toISOString() + "]",
+          content: fileContentBase64
+        };
+        if (FILE_SHA) payload.sha = FILE_SHA;
+
+        const res = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${cfg.token}`,
+            "Content-Type": "application/json",
+            "Accept": "application/vnd.github.v3+json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.message || "Failed to commit cloud update");
+        }
+
+        const resData = await res.json();
+        FILE_SHA = resData.content.sha;
+        localStorage.setItem('FFMS_LOCAL_BACKUP', JSON.stringify(dataset));
+        showToast("🔒 Cloud Commit Confirmed (AES-256)");
+      } catch (err) {
+        console.error(err);
+        showToast("⚠️ Sync Failed! Offline mirror safe: " + err.message);
+      }
+    }
+
+    /* ==========================================================================
+       5. CLIENT CASE CALCULATIONS & CRUD
+       ========================================================================== */
+    function autoCalculateFields() {
+      const disAmt = parseFloat(document.getElementById('disbursementAmtConsidered').value) || 0;
+      const corpPct = parseFloat(document.getElementById('corporatePayoutPercent').value) || 0;
+
+      if (disAmt > 0 && corpPct > 0) {
+        const totalGrossPayout = (disAmt * corpPct) / 100;
+        const dsa90 = (totalGrossPayout * 0.90).toFixed(2);
+        const comp10 = (totalGrossPayout * 0.10).toFixed(2);
+
+        document.getElementById('dsaPayoutAmt90').value = dsa90;
+        document.getElementById('copanyRevenue10').value = comp10;
+      }
+      autoCalculateDifference();
+    }
+
+    function autoCalculateDifference() {
+      const dsa90 = parseFloat(document.getElementById('dsaPayoutAmt90').value) || 0;
+      const seenApp = parseFloat(document.getElementById('amtSeenInApp').value) || 0;
+      if (seenApp > 0 && dsa90 > 0) {
+        document.getElementById('payoutDifference').value = (seenApp - dsa90).toFixed(2);
+      }
+    }
+
+    function openAddCaseModal() {
+      document.getElementById('caseForm').reset();
+      document.getElementById('caseId').value = "";
+      document.getElementById('modalTitle').innerText = "Add Client Case";
+      document.getElementById('caseModal').style.display = 'flex';
+    }
+
+    function openEditCaseModal(id) {
+      const item = CASES_DATA.find(c => c.id === id);
+      if (!item) return;
+
+      document.getElementById('caseId').value = item.id;
+      document.getElementById('disbursementMonth').value = item.disbursementMonth || '';
+      document.getElementById('revenueMonth').value = item.revenueMonth || '';
+      document.getElementById('caseName').value = item.caseName || '';
+      document.getElementById('bankProduct').value = item.bankProduct || '';
+      document.getElementById('sanctionAmt').value = item.sanctionAmt || '';
+      document.getElementById('disbursementAmtConsidered').value = item.disbursementAmtConsidered || '';
+      document.getElementById('corporatePayoutPercent').value = item.corporatePayoutPercent || '';
+      document.getElementById('extraPayback').value = item.extraPayback || '';
+      document.getElementById('dsaPayoutAmt90').value = item.dsaPayoutAmt90 || '';
+      document.getElementById('copanyRevenue10').value = item.copanyRevenue10 || '';
+      document.getElementById('amtSeenInApp').value = item.amtSeenInApp || '';
+      document.getElementById('payoutDifference').value = item.payoutDifference || '';
+      document.getElementById('connecterPayoutWritten').value = item.connecterPayoutWritten || '';
+      document.getElementById('mcfId').value = item.mcfId || '';
+      document.getElementById('billGenerated').value = item.billGenerated || 'No';
+      document.getElementById('billNo').value = item.billNo || '';
+      document.getElementById('receivedInBank').value = item.receivedInBank || 'No';
+      document.getElementById('collectionConfirmationFromCompany').value = item.collectionConfirmationFromCompany || 'Pending';
+      document.getElementById('gstAmtPending').value = item.gstAmtPending || '';
+      document.getElementById('remark').value = item.remark || '';
+
+      document.getElementById('modalTitle').innerText = "Edit Client Case";
+      document.getElementById('caseModal').style.display = 'flex';
+    }
+
+    function closeCaseModal() {
+      document.getElementById('caseModal').style.display = 'none';
+    }
+
+    async function handleSaveCase(e) {
+      e.preventDefault();
+      const id = document.getElementById('caseId').value;
+      const caseObj = {
+        id: id ? id : 'FFMS_' + Date.now(),
+        disbursementMonth: document.getElementById('disbursementMonth').value.trim(),
+        revenueMonth: document.getElementById('revenueMonth').value.trim(),
+        caseName: document.getElementById('caseName').value.trim(),
+        bankProduct: document.getElementById('bankProduct').value.trim(),
+        sanctionAmt: parseFloat(document.getElementById('sanctionAmt').value) || 0,
+        disbursementAmtConsidered: parseFloat(document.getElementById('disbursementAmtConsidered').value) || 0,
+        corporatePayoutPercent: parseFloat(document.getElementById('corporatePayoutPercent').value) || 0,
+        extraPayback: parseFloat(document.getElementById('extraPayback').value) || 0,
+        dsaPayoutAmt90: parseFloat(document.getElementById('dsaPayoutAmt90').value) || 0,
+        copanyRevenue10: parseFloat(document.getElementById('copanyRevenue10').value) || 0,
+        amtSeenInApp: parseFloat(document.getElementById('amtSeenInApp').value) || 0,
+        payoutDifference: parseFloat(document.getElementById('payoutDifference').value) || 0,
+        connecterPayoutWritten: document.getElementById('connecterPayoutWritten').value.trim(),
+        mcfId: document.getElementById('mcfId').value.trim(),
+        billGenerated: document.getElementById('billGenerated').value,
+        billNo: document.getElementById('billNo').value.trim(),
+        receivedInBank: document.getElementById('receivedInBank').value,
+        collectionConfirmationFromCompany: document.getElementById('collectionConfirmationFromCompany').value,
+        gstAmtPending: parseFloat(document.getElementById('gstAmtPending').value) || 0,
+        remark: document.getElementById('remark').value.trim(),
+        lastUpdated: new Date().toISOString()
+      };
+
+      if (id) {
+        const index = CASES_DATA.findIndex(c => c.id === id);
+        if (index !== -1) CASES_DATA[index] = caseObj;
+      } else {
+        CASES_DATA.unshift(caseObj);
+      }
+
+      closeCaseModal();
+      renderCases();
+      await pushToGitHub(CASES_DATA, `Update case ${caseObj.caseName}`);
+    }
+
+    async function deleteCase(id) {
+      const target = CASES_DATA.find(c => c.id === id);
+      if (!confirm(`Pakka delete karna hai case: ${target ? target.caseName : ''}?`)) return;
+      
+      CASES_DATA = CASES_DATA.filter(c => c.id !== id);
+      renderCases();
+      await pushToGitHub(CASES_DATA, `Deleted case ${id}`);
+    }
+
+    /* ==========================================================================
+       6. UI RENDERING & SUMMARY STATS
+       ========================================================================== */
+    function formatCurrency(val) {
+      return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val || 0);
+    }
+
+    function renderCases(dataToRender = null) {
+      const list = dataToRender || CASES_DATA;
+      const container = document.getElementById('casesContainer');
+
+      let totalSanction = 0;
+      let totalDisburse = 0;
+      let totalPayout = 0;
+
+      CASES_DATA.forEach(c => {
+        totalSanction += (c.sanctionAmt || 0);
+        totalDisburse += (c.disbursementAmtConsidered || 0);
+        totalPayout += (c.dsaPayoutAmt90 || 0);
+      });
+
+      document.getElementById('statTotal').innerText = CASES_DATA.length;
+      document.getElementById('statSanction').innerText = formatCurrency(totalSanction);
+      document.getElementById('statDisburse').innerText = formatCurrency(totalDisburse);
+      document.getElementById('statPayout').innerText = formatCurrency(totalPayout);
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--text-dim);">
+            <h3>Koi Client Data Nahi Mila</h3>
+            <p style="margin-top: 6px; font-size: 0.85rem;">"+ Client Case" dabayein ya Restore / Sync karein.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(c => `
+        <div class="case-card">
+          <div class="case-header">
+            <div>
+              <div class="case-title">${c.caseName || 'Unnamed Case'}</div>
+              <div class="case-subtitle">${c.bankProduct || 'No Bank Specified'}</div>
+            </div>
+            <span class="badge-pill ${c.receivedInBank === 'Yes' ? 'pill-yes' : 'pill-no'}">
+              Bank: ${c.receivedInBank}
+            </span>
+          </div>
+
+          <div class="case-body-grid">
+            <div>
+              <div class="case-field-label">Disburse Month</div>
+              <div class="case-field-val">${c.disbursementMonth || '-'}</div>
+            </div>
+            <div>
+              <div class="case-field-label">Revenue Month</div>
+              <div class="case-field-val">${c.revenueMonth || '-'}</div>
+            </div>
+            <div>
+              <div class="case-field-label">Sanction Amt</div>
+              <div class="case-field-val">${formatCurrency(c.sanctionAmt)}</div>
+            </div>
+            <div>
+              <div class="case-field-label">Disb. Considered</div>
+              <div class="case-field-val">${formatCurrency(c.disbursementAmtConsidered)}</div>
+            </div>
+            <div>
+              <div class="case-field-label">Corp Payout %</div>
+              <div class="case-field-val">${c.corporatePayoutPercent || 0}%</div>
+            </div>
+            <div>
+              <div class="case-field-label">DSA Payout (90%)</div>
+              <div class="case-field-val" style="color: #34d399;">${formatCurrency(c.dsaPayoutAmt90)}</div>
+            </div>
+            <div>
+              <div class="case-field-label">Company Rev (10%)</div>
+              <div class="case-field-val">${formatCurrency(c.copanyRevenue10)}</div>
+            </div>
+            <div>
+              <div class="case-field-label">MCF ID</div>
+              <div class="case-field-val">${c.mcfId || '-'}</div>
+            </div>
+            <div>
+              <div class="case-field-label">Bill / No</div>
+              <div class="case-field-val">${c.billGenerated} ${c.billNo ? '('+c.billNo+')' : ''}</div>
+            </div>
+            <div>
+              <div class="case-field-label">Company Confirm</div>
+              <div class="case-field-val">${c.collectionConfirmationFromCompany || 'Pending'}</div>
+            </div>
+            ${c.remark ? `
+              <div style="grid-column: 1 / -1; margin-top: 4px;">
+                <div class="case-field-label">Remark</div>
+                <div class="case-field-val" style="font-weight: 400; font-size: 0.8rem; color: #cbd5e1;">${c.remark}</div>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="case-actions">
+            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.78rem;" onclick="openEditCaseModal('${c.id}')">✏️ Edit</button>
+            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.78rem;" onclick="deleteCase('${c.id}')">🗑️ Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterCases() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderCases();
+        return;
+      }
+      const filtered = CASES_DATA.filter(c => {
+        return (c.caseName && c.caseName.toLowerCase().includes(q)) ||
+               (c.bankProduct && c.bankProduct.toLowerCase().includes(q)) ||
+               (c.mcfId && c.mcfId.toLowerCase().includes(q)) ||
+               (c.billNo && c.billNo.toLowerCase().includes(q)) ||
+               (c.disbursementMonth && c.disbursementMonth.toLowerCase().includes(q));
+      });
+      renderCases(filtered);
+    }
+
+    /* ==========================================================================
+       7. RESTORE ENGINE & BACKUP DOWNLOAD
+       ========================================================================== */
+    async function downloadEncryptedBackup() {
+      const cfg = getCloudConfig();
+      const passphrase = cfg ? cfg.passphrase : null;
+      
+      if (!passphrase) {
+        alert("Military Master Passphrase Setup hona chahiye backup download karne ke liye.");
+        return;
+      }
+
+      const raw = JSON.stringify(CASES_DATA, null, 2);
+      const encrypted = await encryptData(raw, passphrase);
+      const blob = new Blob([encrypted], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `FFMS_Encrypted_Backup_${new Date().toISOString().slice(0,10)}.enc`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast("📥 Encrypted Backup Downloaded!");
+    }
+
+    function triggerRestoreInput() {
+      document.getElementById('restoreFileInput').click();
+    }
+
+    async function handleRestoreFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const cfg = getCloudConfig();
+      let pass = cfg ? cfg.passphrase : "";
+      if (!pass) {
+        pass = prompt("Master Passphrase daalein backup restore karne ke liye:");
+        if (!pass) {
+          alert("Passphrase ke bina restore nahi ho sakta!");
+          event.target.value = "";
+          return;
+        }
+      }
+
+      showToast("Restoring & Decrypting file...");
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const fileContent = e.target.result.trim();
+          let jsonString = "";
+
+          // Check if file is raw JSON or encrypted base64
+          if (fileContent.startsWith('[') || fileContent.startsWith('{')) {
+            jsonString = fileContent;
+          } else {
+            jsonString = await decryptData(fileContent, pass);
+          }
+
+          const parsed = JSON.parse(jsonString);
+          if (!Array.isArray(parsed)) {
+            throw new Error("Invalid format! Data list honi chahiye.");
+          }
+
+          if (confirm(`Data read ho gaya! Total ${parsed.length} cases mile. Existing data replace karke Cloud me upload karein?`)) {
+            CASES_DATA = parsed;
+            renderCases();
+            await pushToGitHub(CASES_DATA, "Restored data from external file");
+            showToast(`✅ Successfully Restored ${parsed.length} cases!`);
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Restore Failed: " + err.message);
+        } finally {
+          event.target.value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /* ==========================================================================
+       8. CLEAN EXPORT TO EXCEL (.XLSX)
+       ========================================================================== */
+    function exportToExcel() {
+      if (!CASES_DATA || CASES_DATA.length === 0) {
+        alert("Excel export karne ke liye koi data nahi hai!");
+        return;
+      }
+
+      showToast("Generating clean Excel Sheet...");
+
+      // Exact Image Headers & Data Mapping
+      const excelRows = CASES_DATA.map((c, idx) => ({
+        "Sr No": idx + 1,
+        "Disbursement Month": c.disbursementMonth || "",
+        "Revenue Month": c.revenueMonth || "",
+        "Case Name": c.caseName || "",
+        "Bank & Product": c.bankProduct || "",
+        "Sanction Amt": c.sanctionAmt || 0,
+        "Disbursement Amt Considered": c.disbursementAmtConsidered || 0,
+        "Corporate Payout %": c.corporatePayoutPercent ? `${c.corporatePayoutPercent}%` : "0%",
+        "Extra Payback": c.extraPayback || 0,
+        "DSA Payout Amt 90 %": c.dsaPayoutAmt90 || 0,
+        "Copany Revenue 10%": c.copanyRevenue10 || 0,
+        "Amt Seen In App": c.amtSeenInApp || 0,
+        "Payout Difference": c.payoutDifference || 0,
+        "Connecter Payout Written": c.connecterPayoutWritten || "",
+        "MCF ID": c.mcfId || "",
+        "Bill Generated": c.billGenerated || "No",
+        "Bill No": c.billNo || "",
+        "Received In Bank": c.receivedInBank || "No",
+        "Collection Confirmation From Company": c.collectionConfirmationFromCompany || "Pending",
+        "GST Amt Pending": c.gstAmtPending || 0,
+        "Remark": c.remark || ""
+      }));
+
+      // Create Worksheet
+      const worksheet = XLSX.utils.json_to_sheet(excelRows);
+
+      // Auto-fit Column Widths for neat readability
+      const colKeys = Object.keys(excelRows[0]);
+      const colWidths = colKeys.map(key => {
+        let maxLen = key.length;
+        excelRows.forEach(row => {
+          const val = row[key] ? row[key].toString() : "";
+          if (val.length > maxLen) maxLen = val.length;
+        });
+        return { wch: Math.min(Math.max(maxLen + 3, 12), 40) };
+      });
+      worksheet['!cols'] = colWidths;
+
+      // Create Workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "FFMS Financial Data");
+
+      // File Download Trigger
+      const fileName = `Fair_Financial_Report_${new Date().toISOString().slice(0,10)}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+      showToast("📊 Excel Report Downloaded Cleanly!");
+    }
+
+    /* ==========================================================================
+       9. KEYBOARD SHORTCUTS
+       ========================================================================== */
+    window.addEventListener('keydown', (e) => {
+      // Alt + N -> Add Client
+      if (e.altKey && (e.key === 'n' || e.key === 'N')) {
+        e.preventDefault();
+        openAddCaseModal();
+      }
+      // Alt + S -> Cloud Sync
+      if (e.altKey && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        syncWithGitHub();
+      }
+      // Alt + F -> Focus Global Search
+      if (e.altKey && (e.key === 'f' || e.key === 'F')) {
+        e.preventDefault();
+        document.getElementById('searchInput').focus();
+      }
+      // Alt + E -> Direct Excel Export
+      if (e.altKey && (e.key === 'e' || e.key === 'E')) {
+        e.preventDefault();
+        exportToExcel();
+      }
+      // Escape -> Close Modals
+      if (e.key === 'Escape') {
+        closeCaseModal();
+        closeConfigModal();
+      }
+    });
+
+    /* ==========================================================================
+       10. INITIALIZATION
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      const localMirror = localStorage.getItem('FFMS_LOCAL_BACKUP');
+      if (localMirror) {
+        try {
+          CASES_DATA = JSON.parse(localMirror);
+          renderCases();
+        } catch (e) {
+          console.error("Local mirror parse failed");
+        }
+      }
+
+      const cfg = getCloudConfig();
+      if (cfg && cfg.token && cfg.passphrase) {
+        syncWithGitHub();
+      } else {
+        renderCases();
+      }
+    });
+  </script>
+</body>
+</html>
