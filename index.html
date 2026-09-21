@@ -277,10 +277,11 @@
       border-color: #3b507d;
       transform: translateY(-2px);
     }
-    /* Yellow Glow Highlight when Pending */
+    /* Yellow Glow Highlight for Pending fields/cards */
     .case-card.pending-highlight {
       border-color: var(--warning);
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.18);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.22);
+      background: linear-gradient(135deg, #111827 0%, #1a1e29 100%);
     }
 
     .case-header {
@@ -340,9 +341,10 @@
       padding: 2px 6px;
       border-radius: 4px;
       display: inline-block;
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
 
-    .num-words-preview {
+    .words-live-hint {
       font-size: 0.70rem;
       color: #93c5fd;
       font-style: italic;
@@ -596,7 +598,7 @@
     <div class="toolbar">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search client name, phone, bank, connector, bill no..." oninput="filterCases()" />
+        <input type="text" id="searchInput" placeholder="Search client, corporate DSA, mobile, bank, bill no..." oninput="filterCases()" />
         <span class="search-kbd key-hint">Alt + F</span>
       </div>
       <div class="action-group">
@@ -671,14 +673,21 @@
               <input type="tel" id="clientMobile" class="form-control" placeholder="10-digit mobile number" />
             </div>
 
+            <!-- Image 2 & 3 Updates: Corporate DSA Name & Contact Name/No -->
             <div class="form-group">
-              <label>Connector Name</label>
-              <input type="text" id="connectorName" class="form-control" placeholder="Connector Name" />
+              <label>Corporate DSA Name</label>
+              <input type="text" id="corporateDsaName" class="form-control" placeholder="Corporate DSA Name" required />
             </div>
 
+            <div class="form-group">
+              <label>Corporate DSA Contact Name & No</label>
+              <input type="text" id="corporateDsaContact" class="form-control" placeholder="Contact Person & Phone" />
+            </div>
+
+            <!-- Image 1 Update: Connector Name instead of Address -->
             <div class="form-group" style="grid-column: 1 / -1;">
-              <label>Address</label>
-              <input type="text" id="clientAddress" class="form-control" placeholder="Client complete address / location" />
+              <label>Connector Name</label>
+              <input type="text" id="connectorName" class="form-control" placeholder="Connector Name / Reference" />
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
@@ -721,11 +730,14 @@
               <label>Corporate Payout %</label>
               <input type="number" step="any" id="corporatePayoutPercent" class="form-control" placeholder="e.g. 1.5" oninput="autoCalculateFields()" />
             </div>
+
+            <!-- Extra Payback: Dual Mode (Amt + Words) -->
             <div class="form-group">
-              <label>Extra Payback (₹)</label>
+              <label>Extra Payback (₹) [Numerical + Words]</label>
               <input type="number" step="any" id="extraPayback" class="form-control" placeholder="0.00" oninput="updateWordsPreview('extraPayback', 'wordsExtraPayback')" />
               <div class="words-live-hint" id="wordsExtraPayback"></div>
             </div>
+
             <div class="form-group">
               <label>DSA Payout Amt 90% (₹)</label>
               <input type="number" step="any" id="dsaPayoutAmt90" class="form-control" placeholder="Auto / Manual" />
@@ -734,15 +746,27 @@
               <label>Company Revenue 10% (₹)</label>
               <input type="number" step="any" id="copanyRevenue10" class="form-control" placeholder="Auto / Manual" />
             </div>
+
+            <!-- Amt Seen In App: Yes / Pending Option -->
             <div class="form-group">
-              <label>Amt Seen In App (₹) [Numerical + Words]</label>
-              <input type="number" step="any" id="amtSeenInApp" class="form-control" placeholder="0.00" oninput="autoCalculateDifference(); updateWordsPreview('amtSeenInApp', 'wordsAmtSeenInApp')" />
+              <label>Amt Seen In App (₹) [Amt + Yes/Pending]</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" step="any" id="amtSeenInApp" class="form-control" placeholder="0.00" style="flex: 2;" oninput="autoCalculateDifference(); updateWordsPreview('amtSeenInApp', 'wordsAmtSeenInApp')" />
+                <select id="amtSeenInAppStatus" class="form-control" style="flex: 1;" onchange="checkFieldPendingStatus('amtSeenInAppStatus')">
+                  <option value="Yes">Yes</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
               <div class="words-live-hint" id="wordsAmtSeenInApp"></div>
             </div>
+
+            <!-- Payout Difference: Dual Mode (Amt + Words) -->
             <div class="form-group">
-              <label>Payout Difference (₹)</label>
-              <input type="number" step="any" id="payoutDifference" class="form-control" placeholder="0.00" />
+              <label>Payout Difference (₹) [Numerical + Words]</label>
+              <input type="number" step="any" id="payoutDifference" class="form-control" placeholder="0.00" oninput="updateWordsPreview('payoutDifference', 'wordsPayoutDifference')" />
+              <div class="words-live-hint" id="wordsPayoutDifference"></div>
             </div>
+
             <div class="form-group">
               <label>Connecter Payout Written</label>
               <input type="text" id="connecterPayoutWritten" class="form-control" placeholder="e.g. 0.40% or Flat" />
@@ -767,7 +791,7 @@
             </div>
             <div class="form-group">
               <label>Bill Amount (₹)</label>
-              <input type="number" step="any" id="billAmount" class="form-control" placeholder="0.00" oninput="calculateBillShortfall()" />
+              <input type="number" step="any" id="billAmount" class="form-control" placeholder="0.00" oninput="calculateBillShortfall(); updateWordsPreview('billAmount', 'wordsBillAmount')" />
               <div class="words-live-hint" id="wordsBillAmount"></div>
             </div>
             <div class="form-group">
@@ -775,12 +799,19 @@
               <input type="text" id="billNo" class="form-control" placeholder="Invoice / Bill Number" />
             </div>
 
-            <!-- Received in Bank & Followup Shortfall -->
+            <!-- Received in Bank: Yes / Pending Option -->
             <div class="form-group">
-              <label>Received In Bank (₹) [Numerical + Words]</label>
-              <input type="number" step="any" id="receivedInBank" class="form-control" placeholder="0.00" oninput="calculateBillShortfall(); updateWordsPreview('receivedInBank', 'wordsReceivedInBank')" />
+              <label>Received In Bank (₹) [Amt + Yes/Pending]</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" step="any" id="receivedInBank" class="form-control" placeholder="0.00" style="flex: 2;" oninput="calculateBillShortfall(); updateWordsPreview('receivedInBank', 'wordsReceivedInBank')" />
+                <select id="receivedInBankStatus" class="form-control" style="flex: 1;">
+                  <option value="Yes">Yes</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
               <div class="words-live-hint" id="wordsReceivedInBank"></div>
             </div>
+
             <div class="form-group">
               <label>Bill Shortfall / Pending For Followup (₹)</label>
               <input type="number" step="any" id="billShortfallAmt" class="form-control" placeholder="Auto Calculated Shortfall" readonly style="background: #182238; color: #fbbf24;" />
@@ -793,11 +824,20 @@
                 <option value="Confirmed">Confirmed</option>
               </select>
             </div>
+
+            <!-- GST Amt Pending: Yes / Pending Option -->
             <div class="form-group">
-              <label>GST Amt Pending (₹) [Numerical + Words]</label>
-              <input type="number" step="any" id="gstAmtPending" class="form-control" placeholder="0.00" oninput="updateWordsPreview('gstAmtPending', 'wordsGstAmtPending')" />
+              <label>GST Amt Pending (₹) [Amt + Yes/Pending]</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" step="any" id="gstAmtPending" class="form-control" placeholder="0.00" style="flex: 2;" oninput="updateWordsPreview('gstAmtPending', 'wordsGstAmtPending')" />
+                <select id="gstAmtPendingStatus" class="form-control" style="flex: 1;">
+                  <option value="Pending">Pending</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
               <div class="words-live-hint" id="wordsGstAmtPending"></div>
             </div>
+
             <div class="form-group" style="grid-column: 1 / -1;">
               <label>Remark / Follow-up Notes</label>
               <textarea id="remark" class="form-control" rows="2" placeholder="Any client remarks or case notes..."></textarea>
@@ -876,9 +916,7 @@
       let paisa = parseInt(parts[1]);
 
       let res = getWords(rs) + ' Rupees';
-      if (paisa > 0) {
-        res += ' and ' + getWords(paisa) + ' Paisa';
-      }
+      if (paisa > 0) res += ' and ' + getWords(paisa) + ' Paisa';
       return res + ' Only';
     }
 
@@ -888,6 +926,10 @@
       if (hintEl) {
         hintEl.innerText = val ? `💬 ${numberToWords(val)}` : '';
       }
+    }
+
+    function checkFieldPendingStatus(selectId) {
+      // Optional interactive trigger handler if needed
     }
 
     /* ==========================================================================
@@ -1135,6 +1177,7 @@
       const seenApp = parseFloat(document.getElementById('amtSeenInApp').value) || 0;
       if (seenApp > 0 && dsa90 > 0) {
         document.getElementById('payoutDifference').value = (seenApp - dsa90).toFixed(2);
+        updateWordsPreview('payoutDifference', 'wordsPayoutDifference');
       }
     }
 
@@ -1160,8 +1203,9 @@
       document.getElementById('caseId').value = item.id;
       document.getElementById('clientName').value = item.clientName || '';
       document.getElementById('clientMobile').value = item.clientMobile || '';
+      document.getElementById('corporateDsaName').value = item.corporateDsaName || '';
+      document.getElementById('corporateDsaContact').value = item.corporateDsaContact || '';
       document.getElementById('connectorName').value = item.connectorName || '';
-      document.getElementById('clientAddress').value = item.clientAddress || '';
       setRating(item.clientRating || 5);
 
       document.getElementById('disbursementMonth').value = item.disbursementMonth || '';
@@ -1174,6 +1218,7 @@
       document.getElementById('dsaPayoutAmt90').value = item.dsaPayoutAmt90 || '';
       document.getElementById('copanyRevenue10').value = item.copanyRevenue10 || '';
       document.getElementById('amtSeenInApp').value = item.amtSeenInApp || '';
+      document.getElementById('amtSeenInAppStatus').value = item.amtSeenInAppStatus || 'Yes';
       document.getElementById('payoutDifference').value = item.payoutDifference || '';
       document.getElementById('connecterPayoutWritten').value = item.connecterPayoutWritten || '';
       document.getElementById('mcfId').value = item.mcfId || '';
@@ -1182,13 +1227,16 @@
       document.getElementById('billAmount').value = item.billAmount || '';
       document.getElementById('billNo').value = item.billNo || '';
       document.getElementById('receivedInBank').value = item.receivedInBank || '';
+      document.getElementById('receivedInBankStatus').value = item.receivedInBankStatus || 'Yes';
       document.getElementById('billShortfallAmt').value = item.billShortfallAmt || '';
       document.getElementById('collectionConfirmationFromCompany').value = item.collectionConfirmationFromCompany || 'Pending';
       document.getElementById('gstAmtPending').value = item.gstAmtPending || '';
+      document.getElementById('gstAmtPendingStatus').value = item.gstAmtPendingStatus || 'Pending';
       document.getElementById('remark').value = item.remark || '';
 
       updateWordsPreview('extraPayback', 'wordsExtraPayback');
       updateWordsPreview('amtSeenInApp', 'wordsAmtSeenInApp');
+      updateWordsPreview('payoutDifference', 'wordsPayoutDifference');
       updateWordsPreview('billAmount', 'wordsBillAmount');
       updateWordsPreview('receivedInBank', 'wordsReceivedInBank');
       updateWordsPreview('gstAmtPending', 'wordsGstAmtPending');
@@ -1206,8 +1254,9 @@
         id: id ? id : 'FFMS_' + Date.now(),
         clientName: document.getElementById('clientName').value.trim(),
         clientMobile: document.getElementById('clientMobile').value.trim(),
+        corporateDsaName: document.getElementById('corporateDsaName').value.trim(),
+        corporateDsaContact: document.getElementById('corporateDsaContact').value.trim(),
         connectorName: document.getElementById('connectorName').value.trim(),
-        clientAddress: document.getElementById('clientAddress').value.trim(),
         clientRating: parseInt(document.getElementById('clientRating').value) || 5,
         disbursementMonth: document.getElementById('disbursementMonth').value.trim(),
         revenueMonth: document.getElementById('revenueMonth').value.trim(),
@@ -1219,6 +1268,7 @@
         dsaPayoutAmt90: parseFloat(document.getElementById('dsaPayoutAmt90').value) || 0,
         copanyRevenue10: parseFloat(document.getElementById('copanyRevenue10').value) || 0,
         amtSeenInApp: parseFloat(document.getElementById('amtSeenInApp').value) || 0,
+        amtSeenInAppStatus: document.getElementById('amtSeenInAppStatus').value,
         payoutDifference: parseFloat(document.getElementById('payoutDifference').value) || 0,
         connecterPayoutWritten: document.getElementById('connecterPayoutWritten').value.trim(),
         mcfId: document.getElementById('mcfId').value.trim(),
@@ -1227,9 +1277,11 @@
         billAmount: parseFloat(document.getElementById('billAmount').value) || 0,
         billNo: document.getElementById('billNo').value.trim(),
         receivedInBank: parseFloat(document.getElementById('receivedInBank').value) || 0,
+        receivedInBankStatus: document.getElementById('receivedInBankStatus').value,
         billShortfallAmt: parseFloat(document.getElementById('billShortfallAmt').value) || 0,
         collectionConfirmationFromCompany: document.getElementById('collectionConfirmationFromCompany').value,
         gstAmtPending: parseFloat(document.getElementById('gstAmtPending').value) || 0,
+        gstAmtPendingStatus: document.getElementById('gstAmtPendingStatus').value,
         remark: document.getElementById('remark').value.trim(),
         lastUpdated: new Date().toISOString()
       };
@@ -1263,16 +1315,16 @@
 
     function isPendingCase(c, type) {
       if (type === 'payout') {
-        return (c.payoutDifference !== 0) || (c.collectionConfirmationFromCompany === 'Pending');
+        return (c.payoutDifference !== 0) || (c.collectionConfirmationFromCompany === 'Pending') || (c.amtSeenInAppStatus === 'Pending');
       }
       if (type === 'gst') {
-        return (c.gstAmtPending && c.gstAmtPending > 0);
+        return (c.gstAmtPending && c.gstAmtPending > 0) || (c.gstAmtPendingStatus === 'Pending');
       }
       if (type === 'other') {
-        return (c.receivedInBank === 0) || (c.billGenerated === 'Pending') || (c.billShortfallAmt > 0);
+        return (c.receivedInBank === 0) || (c.receivedInBankStatus === 'Pending') || (c.billGenerated === 'Pending') || (c.billShortfallAmt > 0);
       }
       if (type === 'closed') {
-        return (c.payoutDifference === 0 && (!c.gstAmtPending || c.gstAmtPending === 0) && c.receivedInBank > 0 && c.collectionConfirmationFromCompany === 'Confirmed');
+        return (c.payoutDifference === 0 && (!c.gstAmtPending || c.gstAmtPending === 0) && c.receivedInBank > 0 && c.receivedInBankStatus === 'Yes' && c.collectionConfirmationFromCompany === 'Confirmed');
       }
       return false;
     }
@@ -1308,7 +1360,6 @@
       const list = dataToRender || CASES_DATA;
       const container = document.getElementById('casesContainer');
 
-      // Dashboard Counts
       let countPayoutPending = 0;
       let totalGstPending = 0;
       let countOtherPending = 0;
@@ -1344,7 +1395,8 @@
               <div>
                 <div class="case-title">${c.clientName || 'Unnamed Client'}</div>
                 <div class="client-meta">
-                  <span>🤝 Connector: ${c.connectorName || 'Direct'}</span>
+                  <span>🏢 DSA: ${c.corporateDsaName || 'Direct'}</span>
+                  <span>🤝 Connector: ${c.connectorName || 'None'}</span>
                   ${c.clientMobile ? `<span>📞 ${c.clientMobile}</span>` : ''}
                 </div>
                 <div style="margin-top: 4px; display: flex; align-items: center; gap: 6px;">
@@ -1352,8 +1404,8 @@
                   <span style="font-size: 0.72rem; color: #fbbf24; font-weight: 700;">(${c.clientRating || 5}/5)</span>
                 </div>
               </div>
-              <span class="badge-pill ${c.receivedInBank > 0 ? 'pill-yes' : 'pill-no'}">
-                Bank Recv: ${c.receivedInBank > 0 ? 'Yes' : 'No'}
+              <span class="badge-pill ${c.receivedInBankStatus === 'Yes' ? 'pill-yes' : 'pill-pending'}">
+                Bank Recv: ${c.receivedInBankStatus || 'Yes'}
               </span>
             </div>
 
@@ -1384,15 +1436,21 @@
               </div>
               <div>
                 <div class="case-field-label">Amt Seen In App</div>
-                <div class="case-field-val">${formatCurrency(c.amtSeenInApp)}</div>
+                <div class="case-field-val ${c.amtSeenInAppStatus === 'Pending' ? 'pending-val' : ''}">
+                  ${formatCurrency(c.amtSeenInApp)} (${c.amtSeenInAppStatus || 'Yes'})
+                </div>
               </div>
               <div>
                 <div class="case-field-label">Received In Bank</div>
-                <div class="case-field-val">${formatCurrency(c.receivedInBank)}</div>
+                <div class="case-field-val ${c.receivedInBankStatus === 'Pending' ? 'pending-val' : ''}">
+                  ${formatCurrency(c.receivedInBank)} (${c.receivedInBankStatus || 'Yes'})
+                </div>
               </div>
               <div>
                 <div class="case-field-label">GST Amt Pending</div>
-                <div class="case-field-val ${c.gstAmtPending > 0 ? 'pending-val' : ''}">${formatCurrency(c.gstAmtPending)}</div>
+                <div class="case-field-val ${c.gstAmtPendingStatus === 'Pending' ? 'pending-val' : ''}">
+                  ${formatCurrency(c.gstAmtPending)} (${c.gstAmtPendingStatus || 'Pending'})
+                </div>
               </div>
               <div>
                 <div class="case-field-label">Bill Generated</div>
@@ -1428,6 +1486,8 @@
       const filtered = CASES_DATA.filter(c => {
         return (c.clientName && c.clientName.toLowerCase().includes(q)) ||
                (c.clientMobile && c.clientMobile.toLowerCase().includes(q)) ||
+               (c.corporateDsaName && c.corporateDsaName.toLowerCase().includes(q)) ||
+               (c.corporateDsaContact && c.corporateDsaContact.toLowerCase().includes(q)) ||
                (c.connectorName && c.connectorName.toLowerCase().includes(q)) ||
                (c.bankProduct && c.bankProduct.toLowerCase().includes(q)) ||
                (c.mcfId && c.mcfId.toLowerCase().includes(q)) ||
@@ -1485,8 +1545,9 @@
         "Sr No": idx + 1,
         "Client Name": c.clientName || "",
         "Mobile No": c.clientMobile || "",
+        "Corporate DSA Name": c.corporateDsaName || "",
+        "Corporate DSA Contact": c.corporateDsaContact || "",
         "Connector Name": c.connectorName || "",
-        "Address": c.clientAddress || "",
         "Client Rating": `${c.clientRating || 5}/5`,
         "Disbursement Month": c.disbursementMonth || "",
         "Revenue Month": c.revenueMonth || "",
@@ -1497,13 +1558,17 @@
         "Extra Payback": c.extraPayback || 0,
         "DSA Payout Amt 90 %": c.dsaPayoutAmt90 || 0,
         "Amt Seen In App": c.amtSeenInApp || 0,
+        "Amt Seen In App Status": c.amtSeenInAppStatus || "Yes",
+        "Payout Difference": c.payoutDifference || 0,
         "Received In Bank": c.receivedInBank || 0,
+        "Received In Bank Status": c.receivedInBankStatus || "Yes",
         "Bill Generated": c.billGenerated || "No",
         "Bill Date": c.billDate || "",
         "Bill Amount": c.billAmount || 0,
         "Bill No": c.billNo || "",
         "Bill Shortfall": c.billShortfallAmt || 0,
         "GST Amt Pending": c.gstAmtPending || 0,
+        "GST Status": c.gstAmtPendingStatus || "Pending",
         "Remark": c.remark || ""
       }));
 
