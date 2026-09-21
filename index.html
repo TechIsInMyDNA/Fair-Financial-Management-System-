@@ -23,6 +23,7 @@
       --accent-glow: rgba(37, 99, 235, 0.28);
       --success: #10b981;
       --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.15);
       --danger: #ef4444;
       --text: #f3f4f6;
       --text-dim: #9ca3af;
@@ -162,7 +163,6 @@
     .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
     .btn-danger:hover { background: var(--danger); color: white; }
 
-    /* Visual Key Badges */
     .key-hint {
       background: var(--kbd-bg);
       border: 1px solid var(--kbd-border);
@@ -177,21 +177,16 @@
       box-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
 
-    .btn-primary .key-hint {
-      background: rgba(255,255,255,0.2);
-      border-color: rgba(255,255,255,0.35);
-      color: #fff;
-    }
-
     .container {
       max-width: 1320px;
       margin: 20px auto;
       padding: 0 16px;
     }
 
+    /* Dashboard 4 Status Sequence Cards */
     .stats-bar {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 14px;
       margin-bottom: 20px;
     }
@@ -201,10 +196,20 @@
       border: 1px solid var(--border);
       padding: 16px;
       border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .stat-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .stat-card.active-filter {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.08);
     }
 
     .stat-card span { font-size: 0.74rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
-    .stat-card h3 { font-size: 1.45rem; margin-top: 6px; color: #fff; font-weight: 700; }
+    .stat-card h3 { font-size: 1.35rem; margin-top: 6px; color: #fff; font-weight: 700; }
 
     .toolbar {
       display: flex;
@@ -272,6 +277,11 @@
       border-color: #3b507d;
       transform: translateY(-2px);
     }
+    /* Yellow Glow Highlight when Pending */
+    .case-card.pending-highlight {
+      border-color: var(--warning);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.18);
+    }
 
     .case-header {
       display: flex;
@@ -324,6 +334,20 @@
       color: #e5e7eb;
       word-break: break-all;
     }
+    .case-field-val.pending-val {
+      color: var(--warning);
+      background: var(--warning-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .num-words-preview {
+      font-size: 0.70rem;
+      color: #93c5fd;
+      font-style: italic;
+      margin-top: 2px;
+    }
 
     .badge-pill {
       font-size: 0.72rem;
@@ -334,6 +358,7 @@
     }
     .pill-yes { background: rgba(16, 185, 129, 0.2); color: #34d399; }
     .pill-no { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .pill-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
 
     .case-actions {
       display: flex;
@@ -454,6 +479,13 @@
       outline: none;
     }
 
+    .words-live-hint {
+      font-size: 0.72rem;
+      color: #93c5fd;
+      margin-top: 2px;
+      font-style: italic;
+    }
+
     .modal-footer {
       padding: 14px 20px;
       border-top: 1px solid var(--border);
@@ -463,7 +495,6 @@
       background: #0d1320;
     }
 
-    /* Shortcuts Table Styling */
     .shortcuts-table {
       width: 100%;
       border-collapse: collapse;
@@ -482,10 +513,6 @@
       font-size: 0.72rem;
       text-transform: uppercase;
       background: #0b101c;
-    }
-
-    .shortcuts-table tr:hover {
-      background: rgba(255,255,255,0.02);
     }
 
     #toast {
@@ -546,32 +573,34 @@
   </header>
 
   <div class="container">
+    <!-- Dashboard Exact 4 Status Sequence Cards -->
     <div class="stats-bar">
-      <div class="stat-card">
-        <span>Total Cases</span>
-        <h3 id="statTotal">0</h3>
+      <div class="stat-card" id="cardPayoutPending" onclick="filterByStatus('payout_pending')">
+        <span>Payout Pending</span>
+        <h3 id="statPayoutPending">0</h3>
       </div>
-      <div class="stat-card">
-        <span>Total Sanctioned</span>
-        <h3 id="statSanction">₹0</h3>
+      <div class="stat-card" id="cardGstPending" onclick="filterByStatus('gst_pending')">
+        <span>GST Pending</span>
+        <h3 id="statGstPending">₹0</h3>
       </div>
-      <div class="stat-card">
-        <span>Disbursement Considered</span>
-        <h3 id="statDisburse">₹0</h3>
+      <div class="stat-card" id="cardOtherPending" onclick="filterByStatus('other_pending')">
+        <span>Other Pending</span>
+        <h3 id="statOtherPending">0</h3>
       </div>
-      <div class="stat-card">
-        <span>DSA Payout (90%)</span>
-        <h3 id="statPayout">₹0</h3>
+      <div class="stat-card" id="cardClearClosed" onclick="filterByStatus('clear_closed')">
+        <span>Clear And Closed</span>
+        <h3 id="statClearClosed">0</h3>
       </div>
     </div>
 
     <div class="toolbar">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search client name, phone, bank, MCF ID, bill no..." oninput="filterCases()" />
+        <input type="text" id="searchInput" placeholder="Search client name, phone, bank, connector, bill no..." oninput="filterCases()" />
         <span class="search-kbd key-hint">Alt + F</span>
       </div>
       <div class="action-group">
+        <button class="btn btn-secondary" onclick="resetStatusFilter()" id="resetFilterBtn" style="display:none;">🔄 Clear Filter</button>
         <button class="btn btn-excel" onclick="exportToExcel()" title="Export Clean Formatted Excel">
           📊 Export to Excel <span class="key-hint" style="border-color: rgba(16,185,129,0.5); color: #34d399;">Alt+E</span>
         </button>
@@ -586,19 +615,14 @@
     </div>
   </div>
 
-  <!-- Keyboard Shortcuts Modal (Guide Sheet) -->
+  <!-- Shortcuts Modal -->
   <div class="modal-overlay" id="shortcutsModal">
     <div class="modal-container" style="max-width: 580px;">
       <div class="modal-header">
-        <h3 style="color: #fff; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-          ⌨️ Keyboard Shortcuts Guide
-        </h3>
+        <h3 style="color: #fff; font-size: 1.15rem;">⌨️ Keyboard Shortcuts Guide</h3>
         <button class="btn btn-secondary" onclick="closeShortcutsModal()">✕</button>
       </div>
       <div class="modal-body" style="padding: 12px 20px;">
-        <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 12px;">
-          Fast financial management ke liye in global shortcuts ka use karein. (Mac users use <span class="key-hint">Option</span> instead of <span class="key-hint">Alt</span>).
-        </p>
         <table class="shortcuts-table">
           <thead>
             <tr>
@@ -607,35 +631,17 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><span class="key-hint">Alt + N</span></td>
-              <td><strong>Naya Client Case add karein</strong> (Opens Add Modal)</td>
-            </tr>
-            <tr>
-              <td><span class="key-hint">Alt + S</span></td>
-              <td><strong>GitHub Cloud Sync</strong> (Pull & Push live data)</td>
-            </tr>
-            <tr>
-              <td><span class="key-hint">Alt + F</span></td>
-              <td><strong>Live Global Search bar focus</strong> karein</td>
-            </tr>
-            <tr>
-              <td><span class="key-hint">Alt + E</span></td>
-              <td><strong>Professional Excel Sheet export</strong> karein (.xlsx)</td>
-            </tr>
-            <tr>
-              <td><span class="key-hint">?</span> ya <span class="key-hint">Shift + /</span></td>
-              <td><strong>Yeh Keyboard Shortcuts guide</strong> open karein</td>
-            </tr>
-            <tr>
-              <td><span class="key-hint">Escape</span></td>
-              <td>Kisi bhi open modal, form ya popup ko <strong>close</strong> karein</td>
-            </tr>
+            <tr><td><span class="key-hint">Alt + N</span></td><td>Naya Client Case add karein</td></tr>
+            <tr><td><span class="key-hint">Alt + S</span></td><td>GitHub Cloud Sync</td></tr>
+            <tr><td><span class="key-hint">Alt + F</span></td><td>Search bar focus</td></tr>
+            <tr><td><span class="key-hint">Alt + E</span></td><td>Export to Excel</td></tr>
+            <tr><td><span class="key-hint">?</span></td><td>Shortcuts Guide open karein</td></tr>
+            <tr><td><span class="key-hint">Escape</span></td><td>Close Modals</td></tr>
           </tbody>
         </table>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeShortcutsModal()">Samajh Gaya 👍</button>
+        <button class="btn btn-primary" onclick="closeShortcutsModal()">Got It</button>
       </div>
     </div>
   </div>
@@ -666,8 +672,8 @@
             </div>
 
             <div class="form-group">
-              <label>Case Name</label>
-              <input type="text" id="caseName" class="form-control" placeholder="Firm or Case Reference Name" required />
+              <label>Connector Name</label>
+              <input type="text" id="connectorName" class="form-control" placeholder="Connector Name" />
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
@@ -717,7 +723,8 @@
             </div>
             <div class="form-group">
               <label>Extra Payback (₹)</label>
-              <input type="number" step="any" id="extraPayback" class="form-control" placeholder="0.00" />
+              <input type="number" step="any" id="extraPayback" class="form-control" placeholder="0.00" oninput="updateWordsPreview('extraPayback', 'wordsExtraPayback')" />
+              <div class="words-live-hint" id="wordsExtraPayback"></div>
             </div>
             <div class="form-group">
               <label>DSA Payout Amt 90% (₹)</label>
@@ -728,8 +735,9 @@
               <input type="number" step="any" id="copanyRevenue10" class="form-control" placeholder="Auto / Manual" />
             </div>
             <div class="form-group">
-              <label>Amt Seen In App (₹)</label>
-              <input type="number" step="any" id="amtSeenInApp" class="form-control" placeholder="0.00" oninput="autoCalculateDifference()" />
+              <label>Amt Seen In App (₹) [Numerical + Words]</label>
+              <input type="number" step="any" id="amtSeenInApp" class="form-control" placeholder="0.00" oninput="autoCalculateDifference(); updateWordsPreview('amtSeenInApp', 'wordsAmtSeenInApp')" />
+              <div class="words-live-hint" id="wordsAmtSeenInApp"></div>
             </div>
             <div class="form-group">
               <label>Payout Difference (₹)</label>
@@ -743,24 +751,41 @@
               <label>MCF ID</label>
               <input type="text" id="mcfId" class="form-control" placeholder="MCF Tracking ID" />
             </div>
+            
+            <!-- Bill Generated Advanced Section -->
             <div class="form-group">
-              <label>Bill Generated</label>
+              <label>Bill Generated Status</label>
               <select id="billGenerated" class="form-control">
                 <option value="No">No</option>
                 <option value="Yes">Yes</option>
+                <option value="Pending">Pending</option>
               </select>
+            </div>
+            <div class="form-group">
+              <label>Bill Date</label>
+              <input type="date" id="billDate" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Bill Amount (₹)</label>
+              <input type="number" step="any" id="billAmount" class="form-control" placeholder="0.00" oninput="calculateBillShortfall()" />
+              <div class="words-live-hint" id="wordsBillAmount"></div>
             </div>
             <div class="form-group">
               <label>Bill No</label>
               <input type="text" id="billNo" class="form-control" placeholder="Invoice / Bill Number" />
             </div>
+
+            <!-- Received in Bank & Followup Shortfall -->
             <div class="form-group">
-              <label>Received In Bank</label>
-              <select id="receivedInBank" class="form-control">
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
+              <label>Received In Bank (₹) [Numerical + Words]</label>
+              <input type="number" step="any" id="receivedInBank" class="form-control" placeholder="0.00" oninput="calculateBillShortfall(); updateWordsPreview('receivedInBank', 'wordsReceivedInBank')" />
+              <div class="words-live-hint" id="wordsReceivedInBank"></div>
             </div>
+            <div class="form-group">
+              <label>Bill Shortfall / Pending For Followup (₹)</label>
+              <input type="number" step="any" id="billShortfallAmt" class="form-control" placeholder="Auto Calculated Shortfall" readonly style="background: #182238; color: #fbbf24;" />
+            </div>
+
             <div class="form-group">
               <label>Collection Confirmation From Company</label>
               <select id="collectionConfirmationFromCompany" class="form-control">
@@ -769,11 +794,12 @@
               </select>
             </div>
             <div class="form-group">
-              <label>GST Amt Pending (₹)</label>
-              <input type="number" step="any" id="gstAmtPending" class="form-control" placeholder="0.00" />
+              <label>GST Amt Pending (₹) [Numerical + Words]</label>
+              <input type="number" step="any" id="gstAmtPending" class="form-control" placeholder="0.00" oninput="updateWordsPreview('gstAmtPending', 'wordsGstAmtPending')" />
+              <div class="words-live-hint" id="wordsGstAmtPending"></div>
             </div>
             <div class="form-group" style="grid-column: 1 / -1;">
-              <label>Remark</label>
+              <label>Remark / Follow-up Notes</label>
               <textarea id="remark" class="form-control" rows="2" placeholder="Any client remarks or case notes..."></textarea>
             </div>
           </div>
@@ -797,11 +823,11 @@
       <div class="modal-body">
         <div class="form-group" style="margin-bottom: 12px;">
           <label>GitHub Username (Owner)</label>
-          <input type="text" id="cfgOwner" class="form-control" placeholder="e.g. shubhamagrawal" />
+          <input type="text" id="cfgOwner" class="form-control" value="TechIsInMyDNA" />
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label>Repository Name</label>
-          <input type="text" id="cfgRepo" class="form-control" placeholder="e.g. FFMS-Data" />
+          <input type="text" id="cfgRepo" class="form-control" value="Fair-Financial-Management-System-" />
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label>File Path</label>
@@ -810,16 +836,10 @@
         <div class="form-group" style="margin-bottom: 12px;">
           <label>Custom GitHub Token (Optional Override)</label>
           <input type="password" id="cfgToken" class="form-control" placeholder="••••••••••••••••••••••••••••" />
-          <small style="color: var(--text-dim); font-size: 0.7rem; margin-top: 3px;">
-            Split scanner-safe internal token active by default.
-          </small>
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label>Master Passphrase (AES-GCM 256-Bit)</label>
           <input type="password" id="cfgPassword" class="form-control" placeholder="Enter encryption master password" />
-          <small style="color: #f59e0b; font-size: 0.7rem; margin-top: 3px;">
-            Crucial: data.json will be locked with this passphrase. Never lose it.
-          </small>
         </div>
       </div>
       <div class="modal-footer">
@@ -832,7 +852,46 @@
 
   <script>
     /* ==========================================================================
-       1. SCANNER-SAFE TOKEN RUNTIME ASSEMBLY
+       1. NUMBER TO INDIAN WORDS CONVERTER
+       ========================================================================== */
+    function numberToWords(num) {
+      if (isNaN(num) || num === null || num === undefined || num === '') return '';
+      let n = parseFloat(num);
+      if (n === 0) return 'Zero Rupees Only';
+
+      const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+      function getWords(n) {
+        if (n < 20) return a[n];
+        if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
+        if (n < 1000) return a[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' and ' + getWords(n % 100) : '');
+        if (n < 100000) return getWords(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 ? ' ' + getWords(n % 1000) : '');
+        if (n < 10000000) return getWords(Math.floor(n / 100000)) + ' Lakh' + (n % 100000 ? ' ' + getWords(n % 100000) : '');
+        return getWords(Math.floor(n / 10000000)) + ' Crore' + (n % 10000000 ? ' ' + getWords(n % 10000000) : '');
+      }
+
+      let parts = n.toFixed(2).split('.');
+      let rs = parseInt(parts[0]);
+      let paisa = parseInt(parts[1]);
+
+      let res = getWords(rs) + ' Rupees';
+      if (paisa > 0) {
+        res += ' and ' + getWords(paisa) + ' Paisa';
+      }
+      return res + ' Only';
+    }
+
+    function updateWordsPreview(inputId, hintId) {
+      const val = document.getElementById(inputId).value;
+      const hintEl = document.getElementById(hintId);
+      if (hintEl) {
+        hintEl.innerText = val ? `💬 ${numberToWords(val)}` : '';
+      }
+    }
+
+    /* ==========================================================================
+       2. SCANNER-SAFE TOKEN RUNTIME ASSEMBLY
        ========================================================================== */
     function resolveInternalToken() {
       const parts = [
@@ -845,11 +904,9 @@
       return parts.map(chunk => String.fromCharCode(...chunk)).join('');
     }
 
-    /* ==========================================================================
-       2. GLOBAL STATE & ENCRYPTION ENGINE (AES-256 GCM)
-       ========================================================================== */
     let CASES_DATA = [];
     let FILE_SHA = null;
+    let ACTIVE_STATUS_FILTER = null;
 
     function showToast(msg, duration = 3000) {
       const toast = document.getElementById('toast');
@@ -868,12 +925,7 @@
         ["deriveKey"]
       );
       return crypto.subtle.deriveKey(
-        {
-          name: "PBKDF2",
-          salt: salt,
-          iterations: 100000,
-          hash: "SHA-256"
-        },
+        { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
         baseKey,
         { name: "AES-GCM", length: 256 },
         false,
@@ -886,18 +938,11 @@
       const salt = crypto.getRandomValues(new Uint8Array(16));
       const iv = crypto.getRandomValues(new Uint8Array(12));
       const key = await deriveKey(passphrase, salt);
-
-      const encrypted = await crypto.subtle.encrypt(
-        { name: "AES-GCM", iv: iv },
-        key,
-        enc.encode(plainText)
-      );
-
+      const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(plainText));
       const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
       combined.set(salt, 0);
       combined.set(iv, salt.length);
       combined.set(new Uint8Array(encrypted), salt.length + iv.length);
-
       return btoa(String.fromCharCode(...combined));
     }
 
@@ -906,17 +951,11 @@
         const binStr = atob(cipherBase64.trim());
         const bytes = new Uint8Array(binStr.length);
         for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
-
         const salt = bytes.slice(0, 16);
         const iv = bytes.slice(16, 28);
         const encrypted = bytes.slice(28);
-
         const key = await deriveKey(passphrase, salt);
-        const decrypted = await crypto.subtle.decrypt(
-          { name: "AES-GCM", iv: iv },
-          key,
-          encrypted
-        );
+        const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, encrypted);
         return new TextDecoder().decode(decrypted);
       } catch (e) {
         throw new Error("Decryption failed. Galat Passphrase!");
@@ -924,7 +963,7 @@
     }
 
     /* ==========================================================================
-       3. RATING LOGIC (1 to 5 Stars)
+       3. RATING LOGIC
        ========================================================================== */
     const RATING_LABELS = {
       1: "1/5 - Worst ⚠️",
@@ -938,11 +977,8 @@
       document.getElementById('clientRating').value = val;
       const stars = document.querySelectorAll('#starPicker .star-btn');
       stars.forEach((s, idx) => {
-        if (idx < val) {
-          s.classList.add('active');
-        } else {
-          s.classList.remove('active');
-        }
+        if (idx < val) s.classList.add('active');
+        else s.classList.remove('active');
       });
       document.getElementById('ratingDesc').innerText = RATING_LABELS[val] || `${val}/5`;
     }
@@ -956,27 +992,18 @@
       return out;
     }
 
-    /* ==========================================================================
-       4. SHORTCUTS MODAL HELPERS
-       ========================================================================== */
-    function openShortcutsModal() {
-      document.getElementById('shortcutsModal').style.display = 'flex';
-    }
-
-    function closeShortcutsModal() {
-      document.getElementById('shortcutsModal').style.display = 'none';
-    }
+    function openShortcutsModal() { document.getElementById('shortcutsModal').style.display = 'flex'; }
+    function closeShortcutsModal() { document.getElementById('shortcutsModal').style.display = 'none'; }
 
     /* ==========================================================================
-       5. STORAGE & CONFIG MANAGEMENT
+       4. CONFIG & CLOUD SYNC
        ========================================================================== */
     function getCloudConfig() {
       const cfg = localStorage.getItem('FFMS_CONFIG');
       let parsed = cfg ? JSON.parse(cfg) : {};
-      
       return {
-        owner: parsed.owner || '',
-        repo: parsed.repo || '',
+        owner: parsed.owner || 'TechIsInMyDNA',
+        repo: parsed.repo || 'Fair-Financial-Management-System-',
         path: parsed.path || 'data.json',
         token: parsed.token || resolveInternalToken(),
         passphrase: parsed.passphrase || ''
@@ -995,14 +1022,7 @@
         return;
       }
 
-      const storePayload = {
-        owner,
-        repo,
-        path,
-        token: customToken || resolveInternalToken(),
-        passphrase
-      };
-
+      const storePayload = { owner, repo, path, token: customToken || resolveInternalToken(), passphrase };
       localStorage.setItem('FFMS_CONFIG', JSON.stringify(storePayload));
       closeConfigModal();
       showToast("Config Saved! Connecting to Cloud...");
@@ -1019,17 +1039,12 @@
       document.getElementById('configModal').style.display = 'flex';
     }
 
-    function closeConfigModal() {
-      document.getElementById('configModal').style.display = 'none';
-    }
+    function closeConfigModal() { document.getElementById('configModal').style.display = 'none'; }
 
-    /* ==========================================================================
-       6. GITHUB CLOUD SYNC ENGINE
-       ========================================================================== */
     async function syncWithGitHub() {
       const cfg = getCloudConfig();
       if (!cfg || !cfg.owner || !cfg.repo || !cfg.passphrase) {
-        showToast("Pehle ⚙️ Setup me Owner & Repo details configure karein.");
+        showToast("Pehle ⚙️ Setup me Master Passphrase set karein.");
         openConfigModal();
         return;
       }
@@ -1039,26 +1054,20 @@
 
       try {
         const res = await fetch(url, {
-          headers: {
-            "Authorization": `Bearer ${cfg.token}`,
-            "Accept": "application/vnd.github.v3+json"
-          }
+          headers: { "Authorization": `Bearer ${cfg.token}`, "Accept": "application/vnd.github.v3+json" }
         });
 
         if (res.status === 404) {
-          await pushToGitHub(CASES_DATA, "Initial Commit of Encrypted Financial Data");
+          await pushToGitHub(CASES_DATA, "Initial Commit");
           return;
         }
-
         if (!res.ok) throw new Error("GitHub HTTP: " + res.status);
 
         const data = await res.json();
         FILE_SHA = data.sha;
-        
         const contentEncrypted = atob(data.content.replace(/\s/g, ''));
         const decryptedJson = await decryptData(contentEncrypted, cfg.passphrase);
         CASES_DATA = JSON.parse(decryptedJson || "[]");
-        
         localStorage.setItem('FFMS_LOCAL_BACKUP', JSON.stringify(CASES_DATA));
         renderCases();
         showToast("✅ Cloud Data Synced & Decrypted!");
@@ -1082,19 +1091,12 @@
         const fileContentBase64 = btoa(encryptedBase64);
 
         const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`;
-        const payload = {
-          message: message + " [" + new Date().toISOString() + "]",
-          content: fileContentBase64
-        };
+        const payload = { message: message + " [" + new Date().toISOString() + "]", content: fileContentBase64 };
         if (FILE_SHA) payload.sha = FILE_SHA;
 
         const res = await fetch(url, {
           method: "PUT",
-          headers: {
-            "Authorization": `Bearer ${cfg.token}`,
-            "Content-Type": "application/json",
-            "Accept": "application/vnd.github.v3+json"
-          },
+          headers: { "Authorization": `Bearer ${cfg.token}`, "Content-Type": "application/json", "Accept": "application/vnd.github.v3+json" },
           body: JSON.stringify(payload)
         });
 
@@ -1114,7 +1116,7 @@
     }
 
     /* ==========================================================================
-       7. CLIENT CASE CALCULATIONS & CRUD
+       5. CALCULATIONS & AUTO-SHORTFALL
        ========================================================================== */
     function autoCalculateFields() {
       const disAmt = parseFloat(document.getElementById('disbursementAmtConsidered').value) || 0;
@@ -1122,11 +1124,8 @@
 
       if (disAmt > 0 && corpPct > 0) {
         const totalGrossPayout = (disAmt * corpPct) / 100;
-        const dsa90 = (totalGrossPayout * 0.90).toFixed(2);
-        const comp10 = (totalGrossPayout * 0.10).toFixed(2);
-
-        document.getElementById('dsaPayoutAmt90').value = dsa90;
-        document.getElementById('copanyRevenue10').value = comp10;
+        document.getElementById('dsaPayoutAmt90').value = (totalGrossPayout * 0.90).toFixed(2);
+        document.getElementById('copanyRevenue10').value = (totalGrossPayout * 0.10).toFixed(2);
       }
       autoCalculateDifference();
     }
@@ -1137,6 +1136,13 @@
       if (seenApp > 0 && dsa90 > 0) {
         document.getElementById('payoutDifference').value = (seenApp - dsa90).toFixed(2);
       }
+    }
+
+    function calculateBillShortfall() {
+      const billAmt = parseFloat(document.getElementById('billAmount').value) || 0;
+      const recvBank = parseFloat(document.getElementById('receivedInBank').value) || 0;
+      const shortfall = billAmt - recvBank;
+      document.getElementById('billShortfallAmt').value = shortfall > 0 ? shortfall.toFixed(2) : "0.00";
     }
 
     function openAddCaseModal() {
@@ -1154,10 +1160,10 @@
       document.getElementById('caseId').value = item.id;
       document.getElementById('clientName').value = item.clientName || '';
       document.getElementById('clientMobile').value = item.clientMobile || '';
+      document.getElementById('connectorName').value = item.connectorName || '';
       document.getElementById('clientAddress').value = item.clientAddress || '';
       setRating(item.clientRating || 5);
 
-      document.getElementById('caseName').value = item.caseName || '';
       document.getElementById('disbursementMonth').value = item.disbursementMonth || '';
       document.getElementById('revenueMonth').value = item.revenueMonth || '';
       document.getElementById('bankProduct').value = item.bankProduct || '';
@@ -1172,19 +1178,26 @@
       document.getElementById('connecterPayoutWritten').value = item.connecterPayoutWritten || '';
       document.getElementById('mcfId').value = item.mcfId || '';
       document.getElementById('billGenerated').value = item.billGenerated || 'No';
+      document.getElementById('billDate').value = item.billDate || '';
+      document.getElementById('billAmount').value = item.billAmount || '';
       document.getElementById('billNo').value = item.billNo || '';
-      document.getElementById('receivedInBank').value = item.receivedInBank || 'No';
+      document.getElementById('receivedInBank').value = item.receivedInBank || '';
+      document.getElementById('billShortfallAmt').value = item.billShortfallAmt || '';
       document.getElementById('collectionConfirmationFromCompany').value = item.collectionConfirmationFromCompany || 'Pending';
       document.getElementById('gstAmtPending').value = item.gstAmtPending || '';
       document.getElementById('remark').value = item.remark || '';
+
+      updateWordsPreview('extraPayback', 'wordsExtraPayback');
+      updateWordsPreview('amtSeenInApp', 'wordsAmtSeenInApp');
+      updateWordsPreview('billAmount', 'wordsBillAmount');
+      updateWordsPreview('receivedInBank', 'wordsReceivedInBank');
+      updateWordsPreview('gstAmtPending', 'wordsGstAmtPending');
 
       document.getElementById('modalTitle').innerText = "Edit Client Case";
       document.getElementById('caseModal').style.display = 'flex';
     }
 
-    function closeCaseModal() {
-      document.getElementById('caseModal').style.display = 'none';
-    }
+    function closeCaseModal() { document.getElementById('caseModal').style.display = 'none'; }
 
     async function handleSaveCase(e) {
       e.preventDefault();
@@ -1193,9 +1206,9 @@
         id: id ? id : 'FFMS_' + Date.now(),
         clientName: document.getElementById('clientName').value.trim(),
         clientMobile: document.getElementById('clientMobile').value.trim(),
+        connectorName: document.getElementById('connectorName').value.trim(),
         clientAddress: document.getElementById('clientAddress').value.trim(),
         clientRating: parseInt(document.getElementById('clientRating').value) || 5,
-        caseName: document.getElementById('caseName').value.trim(),
         disbursementMonth: document.getElementById('disbursementMonth').value.trim(),
         revenueMonth: document.getElementById('revenueMonth').value.trim(),
         bankProduct: document.getElementById('bankProduct').value.trim(),
@@ -1210,8 +1223,11 @@
         connecterPayoutWritten: document.getElementById('connecterPayoutWritten').value.trim(),
         mcfId: document.getElementById('mcfId').value.trim(),
         billGenerated: document.getElementById('billGenerated').value,
+        billDate: document.getElementById('billDate').value,
+        billAmount: parseFloat(document.getElementById('billAmount').value) || 0,
         billNo: document.getElementById('billNo').value.trim(),
-        receivedInBank: document.getElementById('receivedInBank').value,
+        receivedInBank: parseFloat(document.getElementById('receivedInBank').value) || 0,
+        billShortfallAmt: parseFloat(document.getElementById('billShortfallAmt').value) || 0,
         collectionConfirmationFromCompany: document.getElementById('collectionConfirmationFromCompany').value,
         gstAmtPending: parseFloat(document.getElementById('gstAmtPending').value) || 0,
         remark: document.getElementById('remark').value.trim(),
@@ -1227,138 +1243,180 @@
 
       closeCaseModal();
       renderCases();
-      await pushToGitHub(CASES_DATA, `Update case ${caseObj.clientName} - ${caseObj.caseName}`);
+      await pushToGitHub(CASES_DATA, `Update case ${caseObj.clientName}`);
     }
 
     async function deleteCase(id) {
       const target = CASES_DATA.find(c => c.id === id);
-      if (!confirm(`Pakka delete karna hai: ${target ? target.clientName || target.caseName : ''}?`)) return;
-      
+      if (!confirm(`Pakka delete karna hai: ${target ? target.clientName : ''}?`)) return;
       CASES_DATA = CASES_DATA.filter(c => c.id !== id);
       renderCases();
       await pushToGitHub(CASES_DATA, `Deleted case ${id}`);
     }
 
     /* ==========================================================================
-       8. UI RENDERING & SUMMARY STATS
-       ========================================================================= */
+       6. DASHBOARD & FILTERING LOGIC
+       ========================================================================== */
     function formatCurrency(val) {
       return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val || 0);
+    }
+
+    function isPendingCase(c, type) {
+      if (type === 'payout') {
+        return (c.payoutDifference !== 0) || (c.collectionConfirmationFromCompany === 'Pending');
+      }
+      if (type === 'gst') {
+        return (c.gstAmtPending && c.gstAmtPending > 0);
+      }
+      if (type === 'other') {
+        return (c.receivedInBank === 0) || (c.billGenerated === 'Pending') || (c.billShortfallAmt > 0);
+      }
+      if (type === 'closed') {
+        return (c.payoutDifference === 0 && (!c.gstAmtPending || c.gstAmtPending === 0) && c.receivedInBank > 0 && c.collectionConfirmationFromCompany === 'Confirmed');
+      }
+      return false;
+    }
+
+    function filterByStatus(statusType) {
+      ACTIVE_STATUS_FILTER = statusType;
+      document.querySelectorAll('.stat-card').forEach(el => el.classList.remove('active-filter'));
+      document.getElementById('resetFilterBtn').style.display = 'inline-flex';
+
+      if (statusType === 'payout_pending') document.getElementById('cardPayoutPending').classList.add('active-filter');
+      if (statusType === 'gst_pending') document.getElementById('cardGstPending').classList.add('active-filter');
+      if (statusType === 'other_pending') document.getElementById('cardOtherPending').classList.add('active-filter');
+      if (statusType === 'clear_closed') document.getElementById('cardClearClosed').classList.add('active-filter');
+
+      const filtered = CASES_DATA.filter(c => {
+        if (statusType === 'payout_pending') return isPendingCase(c, 'payout');
+        if (statusType === 'gst_pending') return isPendingCase(c, 'gst');
+        if (statusType === 'other_pending') return isPendingCase(c, 'other');
+        if (statusType === 'clear_closed') return isPendingCase(c, 'closed');
+        return true;
+      });
+      renderCases(filtered);
+    }
+
+    function resetStatusFilter() {
+      ACTIVE_STATUS_FILTER = null;
+      document.querySelectorAll('.stat-card').forEach(el => el.classList.remove('active-filter'));
+      document.getElementById('resetFilterBtn').style.display = 'none';
+      renderCases();
     }
 
     function renderCases(dataToRender = null) {
       const list = dataToRender || CASES_DATA;
       const container = document.getElementById('casesContainer');
 
-      let totalSanction = 0;
-      let totalDisburse = 0;
-      let totalPayout = 0;
+      // Dashboard Counts
+      let countPayoutPending = 0;
+      let totalGstPending = 0;
+      let countOtherPending = 0;
+      let countClearClosed = 0;
 
       CASES_DATA.forEach(c => {
-        totalSanction += (c.sanctionAmt || 0);
-        totalDisburse += (c.disbursementAmtConsidered || 0);
-        totalPayout += (c.dsaPayoutAmt90 || 0);
+        if (isPendingCase(c, 'payout')) countPayoutPending++;
+        totalGstPending += (c.gstAmtPending || 0);
+        if (isPendingCase(c, 'other')) countOtherPending++;
+        if (isPendingCase(c, 'closed')) countClearClosed++;
       });
 
-      document.getElementById('statTotal').innerText = CASES_DATA.length;
-      document.getElementById('statSanction').innerText = formatCurrency(totalSanction);
-      document.getElementById('statDisburse').innerText = formatCurrency(totalDisburse);
-      document.getElementById('statPayout').innerText = formatCurrency(totalPayout);
+      document.getElementById('statPayoutPending').innerText = countPayoutPending;
+      document.getElementById('statGstPending').innerText = formatCurrency(totalGstPending);
+      document.getElementById('statOtherPending').innerText = countOtherPending;
+      document.getElementById('statClearClosed').innerText = countClearClosed;
 
       if (list.length === 0) {
         container.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--text-dim);">
             <h3>Koi Client Data Nahi Mila</h3>
-            <p style="margin-top: 6px; font-size: 0.85rem;">"+ Client Case" dabayein ya Restore / Sync run karein.</p>
+            <p style="margin-top: 6px; font-size: 0.85rem;">"+ Client Case" dabayein ya filter clear karein.</p>
           </div>
         `;
         return;
       }
 
-      container.innerHTML = list.map(c => `
-        <div class="case-card">
-          <div class="case-header">
-            <div>
-              <div class="case-title">${c.clientName || c.caseName || 'Unnamed Client'}</div>
-              <div class="client-meta">
-                <span>📁 ${c.caseName || 'Case'}</span>
-                ${c.clientMobile ? `<span>📞 ${c.clientMobile}</span>` : ''}
+      container.innerHTML = list.map(c => {
+        const isPending = isPendingCase(c, 'payout') || isPendingCase(c, 'gst') || isPendingCase(c, 'other');
+        return `
+          <div class="case-card ${isPending ? 'pending-highlight' : ''}">
+            <div class="case-header">
+              <div>
+                <div class="case-title">${c.clientName || 'Unnamed Client'}</div>
+                <div class="client-meta">
+                  <span>🤝 Connector: ${c.connectorName || 'Direct'}</span>
+                  ${c.clientMobile ? `<span>📞 ${c.clientMobile}</span>` : ''}
+                </div>
+                <div style="margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                  <span class="rating-stars">${getStarsHtml(c.clientRating || 5)}</span>
+                  <span style="font-size: 0.72rem; color: #fbbf24; font-weight: 700;">(${c.clientRating || 5}/5)</span>
+                </div>
               </div>
-              <div style="margin-top: 4px; display: flex; align-items: center; gap: 6px;">
-                <span class="rating-stars">${getStarsHtml(c.clientRating || 5)}</span>
-                <span style="font-size: 0.72rem; color: #fbbf24; font-weight: 700;">(${c.clientRating || 5}/5)</span>
-              </div>
+              <span class="badge-pill ${c.receivedInBank > 0 ? 'pill-yes' : 'pill-no'}">
+                Bank Recv: ${c.receivedInBank > 0 ? 'Yes' : 'No'}
+              </span>
             </div>
-            <span class="badge-pill ${c.receivedInBank === 'Yes' ? 'pill-yes' : 'pill-no'}">
-              Bank: ${c.receivedInBank}
-            </span>
-          </div>
 
-          <div class="case-body-grid">
-            <div style="grid-column: 1 / -1;">
-              <div class="case-field-label">Bank & Product</div>
-              <div class="case-field-val" style="color: #60a5fa;">${c.bankProduct || 'No Bank Specified'}</div>
-            </div>
-            ${c.clientAddress ? `
+            <div class="case-body-grid">
               <div style="grid-column: 1 / -1;">
-                <div class="case-field-label">Address</div>
-                <div class="case-field-val" style="font-size: 0.78rem; font-weight: 500; color: #cbd5e1;">📍 ${c.clientAddress}</div>
+                <div class="case-field-label">Bank & Product</div>
+                <div class="case-field-val" style="color: #60a5fa;">${c.bankProduct || 'No Bank Specified'}</div>
               </div>
-            ` : ''}
-            <div>
-              <div class="case-field-label">Disburse Month</div>
-              <div class="case-field-val">${c.disbursementMonth || '-'}</div>
-            </div>
-            <div>
-              <div class="case-field-label">Revenue Month</div>
-              <div class="case-field-val">${c.revenueMonth || '-'}</div>
-            </div>
-            <div>
-              <div class="case-field-label">Sanction Amt</div>
-              <div class="case-field-val">${formatCurrency(c.sanctionAmt)}</div>
-            </div>
-            <div>
-              <div class="case-field-label">Disb. Considered</div>
-              <div class="case-field-val">${formatCurrency(c.disbursementAmtConsidered)}</div>
-            </div>
-            <div>
-              <div class="case-field-label">Corp Payout %</div>
-              <div class="case-field-val">${c.corporatePayoutPercent || 0}%</div>
-            </div>
-            <div>
-              <div class="case-field-label">DSA Payout (90%)</div>
-              <div class="case-field-val" style="color: #34d399;">${formatCurrency(c.dsaPayoutAmt90)}</div>
-            </div>
-            <div>
-              <div class="case-field-label">Company Rev (10%)</div>
-              <div class="case-field-val">${formatCurrency(c.copanyRevenue10)}</div>
-            </div>
-            <div>
-              <div class="case-field-label">MCF ID</div>
-              <div class="case-field-val">${c.mcfId || '-'}</div>
-            </div>
-            <div>
-              <div class="case-field-label">Bill / No</div>
-              <div class="case-field-val">${c.billGenerated} ${c.billNo ? '('+c.billNo+')' : ''}</div>
-            </div>
-            <div>
-              <div class="case-field-label">Company Confirm</div>
-              <div class="case-field-val">${c.collectionConfirmationFromCompany || 'Pending'}</div>
-            </div>
-            ${c.remark ? `
-              <div style="grid-column: 1 / -1; margin-top: 4px;">
-                <div class="case-field-label">Remark</div>
-                <div class="case-field-val" style="font-weight: 400; font-size: 0.8rem; color: #cbd5e1;">${c.remark}</div>
+              <div>
+                <div class="case-field-label">Disburse Month</div>
+                <div class="case-field-val">${c.disbursementMonth || '-'}</div>
               </div>
-            ` : ''}
-          </div>
+              <div>
+                <div class="case-field-label">Revenue Month</div>
+                <div class="case-field-val">${c.revenueMonth || '-'}</div>
+              </div>
+              <div>
+                <div class="case-field-label">Sanction Amt</div>
+                <div class="case-field-val">${formatCurrency(c.sanctionAmt)}</div>
+              </div>
+              <div>
+                <div class="case-field-label">Disb. Considered</div>
+                <div class="case-field-val">${formatCurrency(c.disbursementAmtConsidered)}</div>
+              </div>
+              <div>
+                <div class="case-field-label">DSA Payout (90%)</div>
+                <div class="case-field-val" style="color: #34d399;">${formatCurrency(c.dsaPayoutAmt90)}</div>
+              </div>
+              <div>
+                <div class="case-field-label">Amt Seen In App</div>
+                <div class="case-field-val">${formatCurrency(c.amtSeenInApp)}</div>
+              </div>
+              <div>
+                <div class="case-field-label">Received In Bank</div>
+                <div class="case-field-val">${formatCurrency(c.receivedInBank)}</div>
+              </div>
+              <div>
+                <div class="case-field-label">GST Amt Pending</div>
+                <div class="case-field-val ${c.gstAmtPending > 0 ? 'pending-val' : ''}">${formatCurrency(c.gstAmtPending)}</div>
+              </div>
+              <div>
+                <div class="case-field-label">Bill Generated</div>
+                <div class="case-field-val ${c.billGenerated === 'Pending' ? 'pending-val' : ''}">${c.billGenerated} ${c.billNo ? '('+c.billNo+')' : ''}</div>
+              </div>
+              <div>
+                <div class="case-field-label">Bill Shortfall / Followup</div>
+                <div class="case-field-val ${c.billShortfallAmt > 0 ? 'pending-val' : ''}">${formatCurrency(c.billShortfallAmt)}</div>
+              </div>
+              ${c.remark ? `
+                <div style="grid-column: 1 / -1; margin-top: 4px;">
+                  <div class="case-field-label">Remark / Notes</div>
+                  <div class="case-field-val" style="font-weight: 400; font-size: 0.8rem; color: #cbd5e1;">${c.remark}</div>
+                </div>
+              ` : ''}
+            </div>
 
-          <div class="case-actions">
-            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.78rem;" onclick="openEditCaseModal('${c.id}')">✏️ Edit</button>
-            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.78rem;" onclick="deleteCase('${c.id}')">🗑️ Delete</button>
+            <div class="case-actions">
+              <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.78rem;" onclick="openEditCaseModal('${c.id}')">✏️ Edit</button>
+              <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.78rem;" onclick="deleteCase('${c.id}')">🗑️ Delete</button>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function filterCases() {
@@ -1370,30 +1428,22 @@
       const filtered = CASES_DATA.filter(c => {
         return (c.clientName && c.clientName.toLowerCase().includes(q)) ||
                (c.clientMobile && c.clientMobile.toLowerCase().includes(q)) ||
-               (c.clientAddress && c.clientAddress.toLowerCase().includes(q)) ||
-               (c.caseName && c.caseName.toLowerCase().includes(q)) ||
+               (c.connectorName && c.connectorName.toLowerCase().includes(q)) ||
                (c.bankProduct && c.bankProduct.toLowerCase().includes(q)) ||
                (c.mcfId && c.mcfId.toLowerCase().includes(q)) ||
-               (c.billNo && c.billNo.toLowerCase().includes(q)) ||
-               (c.disbursementMonth && c.disbursementMonth.toLowerCase().includes(q));
+               (c.billNo && c.billNo.toLowerCase().includes(q));
       });
       renderCases(filtered);
     }
 
     /* ==========================================================================
-       9. RESTORE ENGINE & BACKUP DOWNLOAD
+       7. RESTORE, BACKUP & EXCEL EXPORT
        ========================================================================== */
     async function downloadEncryptedBackup() {
       const cfg = getCloudConfig();
-      const passphrase = cfg ? cfg.passphrase : null;
-      
-      if (!passphrase) {
-        alert("Pehle Setup me Master Passphrase set karein.");
-        return;
-      }
-
+      if (!cfg.passphrase) { alert("Pehle Master Passphrase set karein."); return; }
       const raw = JSON.stringify(CASES_DATA, null, 2);
-      const encrypted = await encryptData(raw, passphrase);
+      const encrypted = await encryptData(raw, cfg.passphrase);
       const blob = new Blob([encrypted], { type: 'text/plain' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -1403,183 +1453,85 @@
       showToast("📥 Encrypted Backup Downloaded!");
     }
 
-    function triggerRestoreInput() {
-      document.getElementById('restoreFileInput').click();
-    }
+    function triggerRestoreInput() { document.getElementById('restoreFileInput').click(); }
 
     async function handleRestoreFile(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const cfg = getCloudConfig();
-      let pass = cfg ? cfg.passphrase : "";
-      if (!pass) {
-        pass = prompt("Master Passphrase daalein backup restore karne ke liye:");
-        if (!pass) {
-          alert("Passphrase zaroori hai!");
-          event.target.value = "";
-          return;
-        }
-      }
+      let pass = cfg.passphrase || prompt("Master Passphrase daalein:");
+      if (!pass) return;
 
-      showToast("Restoring file...");
       const reader = new FileReader();
       reader.onload = async function(e) {
         try {
-          const fileContent = e.target.result.trim();
-          let jsonString = "";
-
-          if (fileContent.startsWith('[') || fileContent.startsWith('{')) {
-            jsonString = fileContent;
-          } else {
-            jsonString = await decryptData(fileContent, pass);
-          }
-
-          const parsed = JSON.parse(jsonString);
-          if (!Array.isArray(parsed)) {
-            throw new Error("Invalid format! Cases array expected.");
-          }
-
-          if (confirm(`${parsed.length} cases mile. Existing data replace karke Cloud me sync karein?`)) {
+          const content = e.target.result.trim();
+          let jsonStr = (content.startsWith('[') || content.startsWith('{')) ? content : await decryptData(content, pass);
+          const parsed = JSON.parse(jsonStr);
+          if (Array.isArray(parsed)) {
             CASES_DATA = parsed;
             renderCases();
-            await pushToGitHub(CASES_DATA, "Restored backup data");
-            showToast(`✅ Successfully Restored ${parsed.length} cases!`);
+            await pushToGitHub(CASES_DATA, "Restored backup");
+            showToast(`✅ Restored ${parsed.length} cases!`);
           }
-        } catch (err) {
-          console.error(err);
-          alert("Restore Failed: " + err.message);
-        } finally {
-          event.target.value = "";
-        }
+        } catch (err) { alert("Restore Failed: " + err.message); }
       };
       reader.readAsText(file);
     }
 
-    /* ==========================================================================
-       10. EXPORT CLEAN FORMATTED EXCEL
-       ========================================================================== */
     function exportToExcel() {
-      if (!CASES_DATA || CASES_DATA.length === 0) {
-        alert("Excel export karne ke liye koi data nahi hai!");
-        return;
-      }
-
-      showToast("Exporting clean Excel sheet...");
-
+      if (!CASES_DATA.length) { alert("Koi data nahi hai!"); return; }
       const excelRows = CASES_DATA.map((c, idx) => ({
         "Sr No": idx + 1,
         "Client Name": c.clientName || "",
         "Mobile No": c.clientMobile || "",
-        "Client Rating": `${c.clientRating || 5}/5 (${RATING_LABELS[c.clientRating || 5] || ''})`,
+        "Connector Name": c.connectorName || "",
         "Address": c.clientAddress || "",
-        "Case Name": c.caseName || "",
+        "Client Rating": `${c.clientRating || 5}/5`,
         "Disbursement Month": c.disbursementMonth || "",
         "Revenue Month": c.revenueMonth || "",
         "Bank & Product": c.bankProduct || "",
         "Sanction Amt": c.sanctionAmt || 0,
         "Disbursement Amt Considered": c.disbursementAmtConsidered || 0,
-        "Corporate Payout %": c.corporatePayoutPercent ? `${c.corporatePayoutPercent}%` : "0%",
+        "Corporate Payout %": c.corporatePayoutPercent || 0,
         "Extra Payback": c.extraPayback || 0,
         "DSA Payout Amt 90 %": c.dsaPayoutAmt90 || 0,
-        "Copany Revenue 10%": c.copanyRevenue10 || 0,
         "Amt Seen In App": c.amtSeenInApp || 0,
-        "Payout Difference": c.payoutDifference || 0,
-        "Connecter Payout Written": c.connecterPayoutWritten || "",
-        "MCF ID": c.mcfId || "",
+        "Received In Bank": c.receivedInBank || 0,
         "Bill Generated": c.billGenerated || "No",
+        "Bill Date": c.billDate || "",
+        "Bill Amount": c.billAmount || 0,
         "Bill No": c.billNo || "",
-        "Received In Bank": c.receivedInBank || "No",
-        "Collection Confirmation From Company": c.collectionConfirmationFromCompany || "Pending",
+        "Bill Shortfall": c.billShortfallAmt || 0,
         "GST Amt Pending": c.gstAmtPending || 0,
         "Remark": c.remark || ""
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(excelRows);
-
-      const colKeys = Object.keys(excelRows[0]);
-      const colWidths = colKeys.map(key => {
-        let maxLen = key.length;
-        excelRows.forEach(row => {
-          const val = row[key] ? row[key].toString() : "";
-          if (val.length > maxLen) maxLen = val.length;
-        });
-        return { wch: Math.min(Math.max(maxLen + 3, 14), 45) };
-      });
-      worksheet['!cols'] = colWidths;
-
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "FFMS Data");
-
-      const fileName = `Fair_Financial_${new Date().toISOString().slice(0,10)}.xlsx`;
-      XLSX.writeFile(workbook, fileName);
-      showToast("📊 Excel Report Downloaded Cleanly!");
+      XLSX.writeFile(workbook, `Fair_Financial_${new Date().toISOString().slice(0,10)}.xlsx`);
+      showToast("📊 Excel Exported Cleanly!");
     }
 
     /* ==========================================================================
-       11. KEYBOARD SHORTCUTS ENGINE
+       8. SHORTCUTS & INIT
        ========================================================================== */
     window.addEventListener('keydown', (e) => {
-      // Don't trigger shortcuts if user is typing inside an input or textarea (except Escape)
       const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
-
-      if (e.key === 'Escape') {
-        closeCaseModal();
-        closeConfigModal();
-        closeShortcutsModal();
-        return;
-      }
-
-      // Alt + N -> Add Client Case
-      if (e.altKey && (e.key === 'n' || e.key === 'N')) {
-        e.preventDefault();
-        openAddCaseModal();
-      }
-
-      // Alt + S -> GitHub Sync
-      if (e.altKey && (e.key === 's' || e.key === 'S')) {
-        e.preventDefault();
-        syncWithGitHub();
-      }
-
-      // Alt + F -> Focus Search Input
-      if (e.altKey && (e.key === 'f' || e.key === 'F')) {
-        e.preventDefault();
-        document.getElementById('searchInput').focus();
-      }
-
-      // Alt + E -> Export to Excel
-      if (e.altKey && (e.key === 'e' || e.key === 'E')) {
-        e.preventDefault();
-        exportToExcel();
-      }
-
-      // '?' key to toggle Shortcuts Help (only when not typing in fields)
-      if (!isTyping && e.key === '?') {
-        e.preventDefault();
-        const modal = document.getElementById('shortcutsModal');
-        if (modal.style.display === 'flex') {
-          closeShortcutsModal();
-        } else {
-          openShortcutsModal();
-        }
-      }
+      if (e.key === 'Escape') { closeCaseModal(); closeConfigModal(); closeShortcutsModal(); return; }
+      if (!isTyping && e.altKey && (e.key === 'n' || e.key === 'N')) { e.preventDefault(); openAddCaseModal(); }
+      if (!isTyping && e.altKey && (e.key === 's' || e.key === 'S')) { e.preventDefault(); syncWithGitHub(); }
+      if (!isTyping && e.altKey && (e.key === 'f' || e.key === 'F')) { e.preventDefault(); document.getElementById('searchInput').focus(); }
+      if (!isTyping && e.altKey && (e.key === 'e' || e.key === 'E')) { e.preventDefault(); exportToExcel(); }
+      if (!isTyping && e.key === '?') { e.preventDefault(); openShortcutsModal(); }
     });
 
-    /* ==========================================================================
-       12. INITIALIZATION
-       ========================================================================== */
     window.addEventListener('DOMContentLoaded', () => {
       const localMirror = localStorage.getItem('FFMS_LOCAL_BACKUP');
       if (localMirror) {
-        try {
-          CASES_DATA = JSON.parse(localMirror);
-          renderCases();
-        } catch (e) {
-          console.error("Local mirror parse failed");
-        }
+        try { CASES_DATA = JSON.parse(localMirror); renderCases(); } catch (e) {}
       }
-
       const cfg = getCloudConfig();
       if (cfg && cfg.owner && cfg.repo && cfg.passphrase) {
         syncWithGitHub();
