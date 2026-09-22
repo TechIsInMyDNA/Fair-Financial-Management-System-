@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Fair Financial Management System</title>
-  <meta name="theme-color" content="#0d1117" />
+  <meta name="theme-color" content="#080c14" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,6 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
+    /* Default Dark Theme */
     :root {
       --bg: #080c14;
       --card-bg: #111827;
@@ -31,6 +32,29 @@
       --star-inactive: #4b5563;
       --kbd-bg: #1f293d;
       --kbd-border: #374151;
+      --card-inner: #0d1320;
+    }
+
+    /* Clean Light Theme */
+    body.light-theme {
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --card-sub: #e2e8f0;
+      --border: #cbd5e1;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-glow: rgba(37, 99, 235, 0.15);
+      --success: #059669;
+      --warning: #d97706;
+      --warning-bg: rgba(217, 119, 6, 0.12);
+      --danger: #dc2626;
+      --text: #0f172a;
+      --text-dim: #64748b;
+      --star-active: #f59e0b;
+      --star-inactive: #cbd5e1;
+      --kbd-bg: #e2e8f0;
+      --kbd-border: #94a3b8;
+      --card-inner: #f8fafc;
     }
 
     * {
@@ -39,6 +63,7 @@
       padding: 0;
       font-family: 'Inter', sans-serif;
       -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
 
     body {
@@ -49,17 +74,17 @@
     }
 
     header {
-      background: rgba(17, 24, 39, 0.95);
+      background: var(--card-bg);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 50;
-      padding: 14px 18px;
+      padding: 12px 18px;
     }
 
     .nav-container {
-      max-width: 1320px;
+      max-width: 1340px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -71,7 +96,7 @@
     .brand-section {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
     }
 
     .brand-title {
@@ -81,13 +106,13 @@
       display: flex;
       align-items: center;
       gap: 9px;
-      color: #ffffff;
+      color: var(--text);
     }
 
     .brand-subline {
       font-size: 0.72rem;
-      font-weight: 500;
-      color: #93c5fd;
+      font-weight: 600;
+      color: #3b82f6;
       letter-spacing: 0.2px;
     }
 
@@ -124,14 +149,14 @@
     .btn {
       border: none;
       outline: none;
-      padding: 8px 14px;
+      padding: 7px 13px;
       border-radius: 8px;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       transition: all 0.2s ease;
       white-space: nowrap;
     }
@@ -148,16 +173,24 @@
       color: var(--text);
       border: 1px solid var(--border);
     }
-    .btn-secondary:hover { background: #26334d; }
+    .btn-secondary:hover { opacity: 0.9; }
 
     .btn-excel {
       background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
+      color: var(--success);
       border: 1px solid rgba(16, 185, 129, 0.4);
     }
     .btn-excel:hover {
       background: var(--success);
       color: white;
+    }
+
+    .btn-theme {
+      background: var(--card-sub);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 7px 11px;
+      font-size: 0.95rem;
     }
 
     .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
@@ -166,29 +199,26 @@
     .key-hint {
       background: var(--kbd-bg);
       border: 1px solid var(--kbd-border);
-      color: #cbd5e1;
+      color: var(--text-dim);
       font-size: 0.65rem;
-      padding: 2px 6px;
+      padding: 2px 5px;
       border-radius: 4px;
       font-family: monospace;
       font-weight: 700;
-      letter-spacing: 0.5px;
-      display: inline-block;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
 
     .container {
-      max-width: 1320px;
-      margin: 20px auto;
+      max-width: 1340px;
+      margin: 18px auto;
       padding: 0 16px;
     }
 
-    /* Dashboard 4 Status Sequence Cards */
+    /* 4 Primary Top Sequence Dashboard Cards */
     .stats-bar {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .stat-card {
@@ -197,7 +227,7 @@
       padding: 16px;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     .stat-card:hover {
       border-color: var(--accent);
@@ -205,17 +235,17 @@
     }
     .stat-card.active-filter {
       border-color: var(--warning);
-      background: rgba(245, 158, 11, 0.08);
+      background: var(--warning-bg);
     }
 
     .stat-card span { font-size: 0.74rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
-    .stat-card h3 { font-size: 1.35rem; margin-top: 6px; color: #fff; font-weight: 700; }
+    .stat-card h3 { font-size: 1.35rem; margin-top: 6px; color: var(--text); font-weight: 700; }
 
     .toolbar {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       align-items: center;
       justify-content: space-between;
     }
@@ -232,8 +262,8 @@
       border: 1px solid var(--border);
       border-radius: 9px;
       padding: 10px 85px 10px 38px;
-      color: white;
-      font-size: 0.9rem;
+      color: var(--text);
+      font-size: 0.88rem;
     }
     .search-box input:focus { border-color: var(--accent); outline: none; }
     .search-icon {
@@ -254,11 +284,29 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      align-items: center;
     }
 
+    .filter-pill {
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      cursor: pointer;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+    .filter-pill.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* Cards Grid */
     .grid-cases {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
       gap: 16px;
     }
 
@@ -266,107 +314,126 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 18px;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transition: transform 0.15s, border-color 0.15s;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      transition: all 0.2s ease;
     }
-    .case-card:hover {
-      border-color: #3b507d;
-      transform: translateY(-2px);
-    }
-    /* Yellow Glow Highlight for Pending fields/cards */
     .case-card.pending-highlight {
       border-color: var(--warning);
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.22);
-      background: linear-gradient(135deg, #111827 0%, #1a1e29 100%);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.22);
     }
 
-    .case-header {
+    /* Collapsed Preview Card Header */
+    .case-card-header {
+      padding: 14px 16px;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .case-card-header:hover {
+      background: rgba(255,255,255,0.015);
+    }
+
+    .case-header-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 10px;
       gap: 8px;
     }
 
     .case-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      color: #fff;
+      color: var(--text);
     }
 
     .client-meta {
-      font-size: 0.78rem;
-      color: #93c5fd;
-      margin-top: 3px;
+      font-size: 0.75rem;
+      color: #3b82f6;
+      margin-top: 2px;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      align-items: center;
     }
 
-    .rating-stars {
+    /* Outward Highlights Pill Row on Card */
+    .outward-summary-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .out-pill {
+      font-size: 0.70rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
       display: inline-flex;
-      gap: 2px;
-      color: var(--star-active);
-      font-size: 0.85rem;
+      align-items: center;
+      gap: 4px;
+    }
+    .out-pill-recv { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .out-pill-shortfall { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.4); }
+    .out-pill-gst { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
+    .out-pill-payout { background: rgba(37, 99, 235, 0.12); color: #60a5fa; }
+
+    .collapse-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.73rem;
+      color: var(--text-dim);
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+      margin-top: 4px;
+    }
+
+    /* Expandable Body */
+    .case-expanded-body {
+      display: none;
+      padding: 16px;
+      background: var(--card-inner);
+      border-top: 1px solid var(--border);
+    }
+    .case-card.expanded .case-expanded-body {
+      display: block;
     }
 
     .case-body-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px 12px;
-      font-size: 0.82rem;
+      font-size: 0.80rem;
     }
 
     .case-field-label {
       color: var(--text-dim);
-      font-size: 0.70rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
       font-weight: 600;
     }
 
     .case-field-val {
       font-weight: 600;
-      color: #e5e7eb;
+      color: var(--text);
       word-break: break-all;
     }
     .case-field-val.pending-val {
       color: var(--warning);
       background: var(--warning-bg);
-      padding: 2px 6px;
+      padding: 1px 5px;
       border-radius: 4px;
       display: inline-block;
-      border: 1px solid rgba(245, 158, 11, 0.3);
     }
-
-    .words-live-hint {
-      font-size: 0.70rem;
-      color: #93c5fd;
-      font-style: italic;
-      margin-top: 2px;
-    }
-
-    .badge-pill {
-      font-size: 0.72rem;
-      padding: 3px 8px;
-      border-radius: 6px;
-      display: inline-block;
-      font-weight: 600;
-    }
-    .pill-yes { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-    .pill-no { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-    .pill-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
 
     .case-actions {
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: auto;
+      margin-top: 12px;
       padding-top: 10px;
       border-top: 1px solid var(--border);
     }
@@ -384,14 +451,12 @@
       color: var(--star-inactive);
       cursor: pointer;
       user-select: none;
-      transition: color 0.15s, transform 0.1s;
     }
-    .star-btn:hover { transform: scale(1.15); }
     .star-btn.active { color: var(--star-active); }
 
     .rating-desc {
       font-size: 0.78rem;
-      color: #93c5fd;
+      color: #3b82f6;
       font-weight: 600;
       margin-left: 8px;
     }
@@ -400,7 +465,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.84);
+      background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(5px);
       display: none;
       align-items: center;
@@ -413,17 +478,17 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       width: 100%;
-      max-width: 860px;
-      max-height: 90vh;
+      max-width: 880px;
+      max-height: 92vh;
       border-radius: 14px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
     }
 
     .modal-header {
-      padding: 16px 20px;
+      padding: 14px 20px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -431,15 +496,15 @@
     }
 
     .modal-body {
-      padding: 20px;
+      padding: 18px 20px;
       overflow-y: auto;
     }
 
     .form-section-title {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       text-transform: uppercase;
-      color: #60a5fa;
+      color: #3b82f6;
       letter-spacing: 0.5px;
       margin-bottom: 10px;
       margin-top: 14px;
@@ -452,28 +517,28 @@
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 14px;
+      gap: 12px 14px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
 
     .form-group label {
-      font-size: 0.73rem;
+      font-size: 0.71rem;
       font-weight: 600;
       color: var(--text-dim);
       text-transform: uppercase;
     }
 
     .form-control {
-      background: var(--bg);
+      background: var(--card-inner);
       border: 1px solid var(--border);
       padding: 9px 12px;
       border-radius: 8px;
-      color: white;
+      color: var(--text);
       font-size: 0.85rem;
     }
     .form-control:focus {
@@ -482,19 +547,21 @@
     }
 
     .words-live-hint {
-      font-size: 0.72rem;
-      color: #93c5fd;
+      font-size: 0.70rem;
+      color: #3b82f6;
+      font-weight: 600;
       margin-top: 2px;
-      font-style: italic;
+      min-height: 14px;
+      line-height: 1.2;
     }
 
     .modal-footer {
-      padding: 14px 20px;
+      padding: 12px 20px;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
       gap: 10px;
-      background: #0d1320;
+      background: var(--card-inner);
     }
 
     .shortcuts-table {
@@ -502,32 +569,25 @@
       border-collapse: collapse;
       margin-top: 8px;
     }
-
     .shortcuts-table th, .shortcuts-table td {
-      padding: 12px 14px;
+      padding: 10px 12px;
       text-align: left;
       border-bottom: 1px solid var(--border);
-      font-size: 0.86rem;
+      font-size: 0.84rem;
     }
-
-    .shortcuts-table th {
-      color: var(--text-dim);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      background: #0b101c;
-    }
+    .shortcuts-table th { color: var(--text-dim); text-transform: uppercase; font-size: 0.70rem; }
 
     #toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: #1e293b;
-      color: #fff;
+      background: var(--card-bg);
+      color: var(--text);
       padding: 10px 18px;
       border-radius: 8px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.3);
       border-left: 4px solid var(--accent);
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       transform: translateY(100px);
       opacity: 0;
       transition: all 0.3s;
@@ -560,8 +620,9 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="btn btn-secondary" onclick="openShortcutsModal()" title="View All Shortcuts (?)">
-          ⌨️ Shortcuts <span class="key-hint">?</span>
+        <button class="btn btn-theme" onclick="toggleTheme()" id="themeBtn" title="Toggle Light/Dark Theme">☀️</button>
+        <button class="btn btn-secondary" onclick="openShortcutsModal()" title="View Shortcuts (?)">
+          ⌨️ <span class="key-hint">?</span>
         </button>
         <button class="btn btn-secondary" onclick="openConfigModal()" title="Cloud Configuration">⚙️ Setup</button>
         <button class="btn btn-secondary" onclick="syncWithGitHub()" title="Sync Cloud Data">
@@ -575,7 +636,7 @@
   </header>
 
   <div class="container">
-    <!-- Dashboard Exact 4 Status Sequence Cards -->
+    <!-- Top 4 Priority Status Dashboard Cards -->
     <div class="stats-bar">
       <div class="stat-card" id="cardPayoutPending" onclick="filterByStatus('payout_pending')">
         <span>Payout Pending</span>
@@ -595,23 +656,30 @@
       </div>
     </div>
 
+    <!-- Toolbar with Quick Follow-up Filters -->
     <div class="toolbar">
       <div class="search-box">
         <span class="search-icon">🔍</span>
         <input type="text" id="searchInput" placeholder="Search client, corporate DSA, mobile, bank, bill no..." oninput="filterCases()" />
         <span class="search-kbd key-hint">Alt + F</span>
       </div>
+
       <div class="action-group">
-        <button class="btn btn-secondary" onclick="resetStatusFilter()" id="resetFilterBtn" style="display:none;">🔄 Clear Filter</button>
+        <div class="filter-pill active" onclick="setFollowupFilter('all', this)">All</div>
+        <div class="filter-pill" onclick="setFollowupFilter('shortfall', this)">⚠️ Has Shortfall</div>
+        <div class="filter-pill" onclick="setFollowupFilter('pending', this)">⏳ Pending Followup</div>
+        <div class="filter-pill" onclick="setFollowupFilter('closed', this)">✅ Closed</div>
+        
         <button class="btn btn-excel" onclick="exportToExcel()" title="Export Clean Formatted Excel">
-          📊 Export to Excel <span class="key-hint" style="border-color: rgba(16,185,129,0.5); color: #34d399;">Alt+E</span>
+          📊 Excel <span class="key-hint">Alt+E</span>
         </button>
-        <button class="btn btn-secondary" onclick="downloadEncryptedBackup()" title="Download Local Encrypted Backup">💾 Backup</button>
-        <button class="btn btn-secondary" onclick="triggerRestoreInput()" title="Restore Encrypted File">📥 Restore</button>
+        <button class="btn btn-secondary" onclick="downloadEncryptedBackup()" title="Download Backup">💾 Backup</button>
+        <button class="btn btn-secondary" onclick="triggerRestoreInput()" title="Restore Backup">📥 Restore</button>
         <input type="file" id="restoreFileInput" accept=".enc,.json,.txt" style="display: none;" onchange="handleRestoreFile(event)" />
       </div>
     </div>
 
+    <!-- Collapsible Client Cards Grid -->
     <div class="grid-cases" id="casesContainer">
       <!-- Dynamic Client Cards -->
     </div>
@@ -619,31 +687,28 @@
 
   <!-- Shortcuts Modal -->
   <div class="modal-overlay" id="shortcutsModal">
-    <div class="modal-container" style="max-width: 580px;">
+    <div class="modal-container" style="max-width: 540px;">
       <div class="modal-header">
-        <h3 style="color: #fff; font-size: 1.15rem;">⌨️ Keyboard Shortcuts Guide</h3>
+        <h3 style="color: var(--text); font-size: 1.1rem;">⌨️ Keyboard Shortcuts Guide</h3>
         <button class="btn btn-secondary" onclick="closeShortcutsModal()">✕</button>
       </div>
-      <div class="modal-body" style="padding: 12px 20px;">
+      <div class="modal-body">
         <table class="shortcuts-table">
           <thead>
-            <tr>
-              <th>Shortcut Key</th>
-              <th>Action / Function</th>
-            </tr>
+            <tr><th>Shortcut</th><th>Action</th></tr>
           </thead>
           <tbody>
             <tr><td><span class="key-hint">Alt + N</span></td><td>Naya Client Case add karein</td></tr>
             <tr><td><span class="key-hint">Alt + S</span></td><td>GitHub Cloud Sync</td></tr>
             <tr><td><span class="key-hint">Alt + F</span></td><td>Search bar focus</td></tr>
-            <tr><td><span class="key-hint">Alt + E</span></td><td>Export to Excel</td></tr>
-            <tr><td><span class="key-hint">?</span></td><td>Shortcuts Guide open karein</td></tr>
-            <tr><td><span class="key-hint">Escape</span></td><td>Close Modals</td></tr>
+            <tr><td><span class="key-hint">Alt + E</span></td><td>Export clean Excel</td></tr>
+            <tr><td><span class="key-hint">?</span></td><td>Shortcuts Guide toggle</td></tr>
+            <tr><td><span class="key-hint">Escape</span></td><td>Modals close karein</td></tr>
           </tbody>
         </table>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeShortcutsModal()">Got It</button>
+        <button class="btn btn-primary" onclick="closeShortcutsModal()">Close</button>
       </div>
     </div>
   </div>
@@ -652,7 +717,7 @@
   <div class="modal-overlay" id="caseModal">
     <div class="modal-container">
       <div class="modal-header">
-        <h3 id="modalTitle" style="color: #fff; font-size: 1.15rem;">Add Client Case</h3>
+        <h3 id="modalTitle" style="color: var(--text); font-size: 1.15rem;">Add Client Case</h3>
         <button class="btn btn-secondary" onclick="closeCaseModal()">✕</button>
       </div>
       <div class="modal-body">
@@ -664,18 +729,17 @@
             <div class="form-section-title">👤 Client Profile & Rating</div>
             
             <div class="form-group">
-              <label>Client Name</label>
+              <label>Client Name (Text / Alpha)</label>
               <input type="text" id="clientName" class="form-control" placeholder="Full name of client" required />
             </div>
 
             <div class="form-group">
-              <label>Mobile No</label>
+              <label>Mobile No (Numerical)</label>
               <input type="tel" id="clientMobile" class="form-control" placeholder="10-digit mobile number" />
             </div>
 
-            <!-- Image 2 & 3 Updates: Corporate DSA Name & Contact Name/No -->
             <div class="form-group">
-              <label>Corporate DSA Name</label>
+              <label>Corporate DSA Name (Alphanumeric)</label>
               <input type="text" id="corporateDsaName" class="form-control" placeholder="Corporate DSA Name" required />
             </div>
 
@@ -684,9 +748,8 @@
               <input type="text" id="corporateDsaContact" class="form-control" placeholder="Contact Person & Phone" />
             </div>
 
-            <!-- Image 1 Update: Connector Name instead of Address -->
             <div class="form-group" style="grid-column: 1 / -1;">
-              <label>Connector Name</label>
+              <label>Connector Name (Alphanumeric)</label>
               <input type="text" id="connectorName" class="form-control" placeholder="Connector Name / Reference" />
             </div>
 
@@ -703,56 +766,62 @@
               </div>
             </div>
 
-            <!-- Financial Details -->
-            <div class="form-section-title">💼 Financial & Payout Parameters</div>
+            <!-- Financial Parameters (All ₹ Fields with Automatic Live Words Converter) -->
+            <div class="form-section-title">💼 Financial & Payout Parameters (₹ Numerical + Live Words)</div>
 
             <div class="form-group">
-              <label>Disbursement Month</label>
-              <input type="text" id="disbursementMonth" class="form-control" placeholder="e.g. August 2026" required />
+              <label>Disbursement Month (Alphanumeric)</label>
+              <input type="text" id="disbursementMonth" class="form-control" placeholder="e.g. Aug -26" required />
             </div>
             <div class="form-group">
-              <label>Revenue Month</label>
-              <input type="text" id="revenueMonth" class="form-control" placeholder="e.g. September 2026" />
+              <label>Revenue Month (Alphanumeric)</label>
+              <input type="text" id="revenueMonth" class="form-control" placeholder="e.g. Sept- 26" />
             </div>
             <div class="form-group">
-              <label>Bank & Product</label>
-              <input type="text" id="bankProduct" class="form-control" placeholder="e.g. HDFC Business Loan" required />
+              <label>Bank & Product (Alphanumeric)</label>
+              <input type="text" id="bankProduct" class="form-control" placeholder="e.g. HDFC LAP TL" required />
             </div>
+
             <div class="form-group">
               <label>Sanction Amt (₹)</label>
-              <input type="number" step="any" id="sanctionAmt" class="form-control" placeholder="0.00" oninput="autoCalculateFields()" />
-            </div>
-            <div class="form-group">
-              <label>Disbursement Amt Considered (₹)</label>
-              <input type="number" step="any" id="disbursementAmtConsidered" class="form-control" placeholder="0.00" oninput="autoCalculateFields()" />
-            </div>
-            <div class="form-group">
-              <label>Corporate Payout %</label>
-              <input type="number" step="any" id="corporatePayoutPercent" class="form-control" placeholder="e.g. 1.5" oninput="autoCalculateFields()" />
+              <input type="number" step="any" id="sanctionAmt" class="form-control" placeholder="0.00" oninput="autoCalculateFields(); updateWordsPreview('sanctionAmt', 'wordsSanctionAmt')" />
+              <div class="words-live-hint" id="wordsSanctionAmt"></div>
             </div>
 
-            <!-- Extra Payback: Dual Mode (Amt + Words) -->
             <div class="form-group">
-              <label>Extra Payback (₹) [Numerical + Words]</label>
+              <label>Disbursement Amt Considered (₹)</label>
+              <input type="number" step="any" id="disbursementAmtConsidered" class="form-control" placeholder="0.00" oninput="autoCalculateFields(); updateWordsPreview('disbursementAmtConsidered', 'wordsDisbursementAmt')" />
+              <div class="words-live-hint" id="wordsDisbursementAmt"></div>
+            </div>
+
+            <div class="form-group">
+              <label>Corporate Payout %</label>
+              <input type="number" step="any" id="corporatePayoutPercent" class="form-control" placeholder="e.g. 1.95" oninput="autoCalculateFields()" />
+            </div>
+
+            <div class="form-group">
+              <label>Extra Payback (₹)</label>
               <input type="number" step="any" id="extraPayback" class="form-control" placeholder="0.00" oninput="updateWordsPreview('extraPayback', 'wordsExtraPayback')" />
               <div class="words-live-hint" id="wordsExtraPayback"></div>
             </div>
 
             <div class="form-group">
               <label>DSA Payout Amt 90% (₹)</label>
-              <input type="number" step="any" id="dsaPayoutAmt90" class="form-control" placeholder="Auto / Manual" />
-            </div>
-            <div class="form-group">
-              <label>Company Revenue 10% (₹)</label>
-              <input type="number" step="any" id="copanyRevenue10" class="form-control" placeholder="Auto / Manual" />
+              <input type="number" step="any" id="dsaPayoutAmt90" class="form-control" placeholder="Auto / Manual" oninput="updateWordsPreview('dsaPayoutAmt90', 'wordsDsaPayout')" />
+              <div class="words-live-hint" id="wordsDsaPayout"></div>
             </div>
 
-            <!-- Amt Seen In App: Yes / Pending Option -->
+            <div class="form-group">
+              <label>Company Revenue 10% (₹)</label>
+              <input type="number" step="any" id="copanyRevenue10" class="form-control" placeholder="Auto / Manual" oninput="updateWordsPreview('copanyRevenue10', 'wordsCompanyRev')" />
+              <div class="words-live-hint" id="wordsCompanyRev"></div>
+            </div>
+
             <div class="form-group">
               <label>Amt Seen In App (₹) [Amt + Yes/Pending]</label>
               <div style="display: flex; gap: 8px;">
                 <input type="number" step="any" id="amtSeenInApp" class="form-control" placeholder="0.00" style="flex: 2;" oninput="autoCalculateDifference(); updateWordsPreview('amtSeenInApp', 'wordsAmtSeenInApp')" />
-                <select id="amtSeenInAppStatus" class="form-control" style="flex: 1;" onchange="checkFieldPendingStatus('amtSeenInAppStatus')">
+                <select id="amtSeenInAppStatus" class="form-control" style="flex: 1;">
                   <option value="Yes">Yes</option>
                   <option value="Pending">Pending</option>
                 </select>
@@ -760,23 +829,23 @@
               <div class="words-live-hint" id="wordsAmtSeenInApp"></div>
             </div>
 
-            <!-- Payout Difference: Dual Mode (Amt + Words) -->
             <div class="form-group">
-              <label>Payout Difference (₹) [Numerical + Words]</label>
+              <label>Payout Difference (₹)</label>
               <input type="number" step="any" id="payoutDifference" class="form-control" placeholder="0.00" oninput="updateWordsPreview('payoutDifference', 'wordsPayoutDifference')" />
               <div class="words-live-hint" id="wordsPayoutDifference"></div>
             </div>
 
             <div class="form-group">
-              <label>Connecter Payout Written</label>
+              <label>Connecter Payout Written (Alphanumeric)</label>
               <input type="text" id="connecterPayoutWritten" class="form-control" placeholder="e.g. 0.40% or Flat" />
             </div>
+
             <div class="form-group">
-              <label>MCF ID</label>
+              <label>MCF ID (Alphanumeric)</label>
               <input type="text" id="mcfId" class="form-control" placeholder="MCF Tracking ID" />
             </div>
             
-            <!-- Bill Generated Advanced Section -->
+            <!-- Bill Section -->
             <div class="form-group">
               <label>Bill Generated Status</label>
               <select id="billGenerated" class="form-control">
@@ -785,21 +854,23 @@
                 <option value="Pending">Pending</option>
               </select>
             </div>
+
             <div class="form-group">
               <label>Bill Date</label>
               <input type="date" id="billDate" class="form-control" />
             </div>
+
             <div class="form-group">
               <label>Bill Amount (₹)</label>
               <input type="number" step="any" id="billAmount" class="form-control" placeholder="0.00" oninput="calculateBillShortfall(); updateWordsPreview('billAmount', 'wordsBillAmount')" />
               <div class="words-live-hint" id="wordsBillAmount"></div>
             </div>
+
             <div class="form-group">
-              <label>Bill No</label>
+              <label>Bill No (Alphanumeric)</label>
               <input type="text" id="billNo" class="form-control" placeholder="Invoice / Bill Number" />
             </div>
 
-            <!-- Received in Bank: Yes / Pending Option -->
             <div class="form-group">
               <label>Received In Bank (₹) [Amt + Yes/Pending]</label>
               <div style="display: flex; gap: 8px;">
@@ -813,8 +884,9 @@
             </div>
 
             <div class="form-group">
-              <label>Bill Shortfall / Pending For Followup (₹)</label>
-              <input type="number" step="any" id="billShortfallAmt" class="form-control" placeholder="Auto Calculated Shortfall" readonly style="background: #182238; color: #fbbf24;" />
+              <label>Bill Shortfall / Followup (₹)</label>
+              <input type="number" step="any" id="billShortfallAmt" class="form-control" placeholder="0.00" readonly style="background: var(--warning-bg); color: var(--warning); font-weight: bold;" oninput="updateWordsPreview('billShortfallAmt', 'wordsShortfall')" />
+              <div class="words-live-hint" id="wordsShortfall"></div>
             </div>
 
             <div class="form-group">
@@ -825,9 +897,8 @@
               </select>
             </div>
 
-            <!-- GST Amt Pending: Yes / Pending Option -->
             <div class="form-group">
-              <label>GST Amt Pending (₹) [Amt + Yes/Pending]</label>
+              <label>GST Amt Pending (₹) [Amt + Status]</label>
               <div style="display: flex; gap: 8px;">
                 <input type="number" step="any" id="gstAmtPending" class="form-control" placeholder="0.00" style="flex: 2;" oninput="updateWordsPreview('gstAmtPending', 'wordsGstAmtPending')" />
                 <select id="gstAmtPendingStatus" class="form-control" style="flex: 1;">
@@ -839,12 +910,12 @@
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
-              <label>Remark / Follow-up Notes</label>
-              <textarea id="remark" class="form-control" rows="2" placeholder="Any client remarks or case notes..."></textarea>
+              <label>Remark / Follow-up Notes (Alphanumeric)</label>
+              <textarea id="remark" class="form-control" rows="2" placeholder="Enter follow-up details or remarks..."></textarea>
             </div>
           </div>
 
-          <div class="modal-footer" style="padding: 16px 0 0 0; margin-top: 14px;">
+          <div class="modal-footer">
             <button type="button" class="btn btn-secondary" onclick="closeCaseModal()">Cancel</button>
             <button type="submit" class="btn btn-primary">Save Case Data</button>
           </div>
@@ -857,7 +928,7 @@
   <div class="modal-overlay" id="configModal">
     <div class="modal-container" style="max-width: 520px;">
       <div class="modal-header">
-        <h3 style="color: #fff; font-size: 1.1rem;">Cloud & Security Config</h3>
+        <h3 style="color: var(--text); font-size: 1.1rem;">Cloud & Security Config</h3>
         <button class="btn btn-secondary" onclick="closeConfigModal()">✕</button>
       </div>
       <div class="modal-body">
@@ -892,7 +963,27 @@
 
   <script>
     /* ==========================================================================
-       1. NUMBER TO INDIAN WORDS CONVERTER
+       1. THEME ENGINE (LIGHT / DARK SWITCHER)
+       ========================================================================== */
+    function initTheme() {
+      const savedTheme = localStorage.getItem('FFMS_THEME') || 'dark';
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        document.getElementById('themeBtn').innerText = '🌙';
+      } else {
+        document.body.classList.remove('light-theme');
+        document.getElementById('themeBtn').innerText = '☀️';
+      }
+    }
+
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light-theme');
+      localStorage.setItem('FFMS_THEME', isLight ? 'light' : 'dark');
+      document.getElementById('themeBtn').innerText = isLight ? '🌙' : '☀️';
+    }
+
+    /* ==========================================================================
+       2. NUMBER TO INDIAN WORDS CONVERTER
        ========================================================================== */
     function numberToWords(num) {
       if (isNaN(num) || num === null || num === undefined || num === '') return '';
@@ -924,16 +1015,12 @@
       const val = document.getElementById(inputId).value;
       const hintEl = document.getElementById(hintId);
       if (hintEl) {
-        hintEl.innerText = val ? `💬 ${numberToWords(val)}` : '';
+        hintEl.innerText = val && parseFloat(val) > 0 ? `💬 ${numberToWords(val)}` : '';
       }
     }
 
-    function checkFieldPendingStatus(selectId) {
-      // Optional interactive trigger handler if needed
-    }
-
     /* ==========================================================================
-       2. SCANNER-SAFE TOKEN RUNTIME ASSEMBLY
+       3. SCANNER-SAFE TOKEN RUNTIME ASSEMBLY
        ========================================================================== */
     function resolveInternalToken() {
       const parts = [
@@ -949,6 +1036,7 @@
     let CASES_DATA = [];
     let FILE_SHA = null;
     let ACTIVE_STATUS_FILTER = null;
+    let ACTIVE_FOLLOWUP_FILTER = 'all';
 
     function showToast(msg, duration = 3000) {
       const toast = document.getElementById('toast');
@@ -1005,7 +1093,7 @@
     }
 
     /* ==========================================================================
-       3. RATING LOGIC
+       4. STAR RATING LOGIC
        ========================================================================== */
     const RATING_LABELS = {
       1: "1/5 - Worst ⚠️",
@@ -1038,7 +1126,7 @@
     function closeShortcutsModal() { document.getElementById('shortcutsModal').style.display = 'none'; }
 
     /* ==========================================================================
-       4. CONFIG & CLOUD SYNC
+       5. CLOUD CONFIG & SYNC ENGINE
        ========================================================================== */
     function getCloudConfig() {
       const cfg = localStorage.getItem('FFMS_CONFIG');
@@ -1060,14 +1148,14 @@
       const passphrase = document.getElementById('cfgPassword').value;
 
       if (!owner || !repo || !passphrase) {
-        alert("Owner, Repo Name aur Master Passphrase daalna zaroori hai!");
+        alert("Owner, Repo Name aur Master Passphrase zaroori hai!");
         return;
       }
 
       const storePayload = { owner, repo, path, token: customToken || resolveInternalToken(), passphrase };
       localStorage.setItem('FFMS_CONFIG', JSON.stringify(storePayload));
       closeConfigModal();
-      showToast("Config Saved! Connecting to Cloud...");
+      showToast("Config Saved! Connecting...");
       syncWithGitHub();
     }
 
@@ -1086,7 +1174,7 @@
     async function syncWithGitHub() {
       const cfg = getCloudConfig();
       if (!cfg || !cfg.owner || !cfg.repo || !cfg.passphrase) {
-        showToast("Pehle ⚙️ Setup me Master Passphrase set karein.");
+        showToast("Pehle Setup me Master Passphrase set karein.");
         openConfigModal();
         return;
       }
@@ -1112,7 +1200,7 @@
         CASES_DATA = JSON.parse(decryptedJson || "[]");
         localStorage.setItem('FFMS_LOCAL_BACKUP', JSON.stringify(CASES_DATA));
         renderCases();
-        showToast("✅ Cloud Data Synced & Decrypted!");
+        showToast("✅ Cloud Synced & Decrypted!");
       } catch (err) {
         console.error(err);
         showToast("⚠️ " + err.message);
@@ -1158,7 +1246,7 @@
     }
 
     /* ==========================================================================
-       5. CALCULATIONS & AUTO-SHORTFALL
+       6. CALCULATIONS & AUTO-SHORTFALL
        ========================================================================== */
     function autoCalculateFields() {
       const disAmt = parseFloat(document.getElementById('disbursementAmtConsidered').value) || 0;
@@ -1168,6 +1256,8 @@
         const totalGrossPayout = (disAmt * corpPct) / 100;
         document.getElementById('dsaPayoutAmt90').value = (totalGrossPayout * 0.90).toFixed(2);
         document.getElementById('copanyRevenue10').value = (totalGrossPayout * 0.10).toFixed(2);
+        updateWordsPreview('dsaPayoutAmt90', 'wordsDsaPayout');
+        updateWordsPreview('copanyRevenue10', 'wordsCompanyRev');
       }
       autoCalculateDifference();
     }
@@ -1186,12 +1276,20 @@
       const recvBank = parseFloat(document.getElementById('receivedInBank').value) || 0;
       const shortfall = billAmt - recvBank;
       document.getElementById('billShortfallAmt').value = shortfall > 0 ? shortfall.toFixed(2) : "0.00";
+      updateWordsPreview('billShortfallAmt', 'wordsShortfall');
     }
 
     function openAddCaseModal() {
       document.getElementById('caseForm').reset();
       document.getElementById('caseId').value = "";
       setRating(5);
+      
+      // Clear All Word Previews
+      ['wordsSanctionAmt', 'wordsDisbursementAmt', 'wordsExtraPayback', 'wordsDsaPayout', 'wordsCompanyRev', 'wordsAmtSeenInApp', 'wordsPayoutDifference', 'wordsBillAmount', 'wordsReceivedInBank', 'wordsShortfall', 'wordsGstAmtPending'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = '';
+      });
+
       document.getElementById('modalTitle').innerText = "Add Client Case";
       document.getElementById('caseModal').style.display = 'flex';
     }
@@ -1234,11 +1332,16 @@
       document.getElementById('gstAmtPendingStatus').value = item.gstAmtPendingStatus || 'Pending';
       document.getElementById('remark').value = item.remark || '';
 
+      updateWordsPreview('sanctionAmt', 'wordsSanctionAmt');
+      updateWordsPreview('disbursementAmtConsidered', 'wordsDisbursementAmt');
       updateWordsPreview('extraPayback', 'wordsExtraPayback');
+      updateWordsPreview('dsaPayoutAmt90', 'wordsDsaPayout');
+      updateWordsPreview('copanyRevenue10', 'wordsCompanyRev');
       updateWordsPreview('amtSeenInApp', 'wordsAmtSeenInApp');
       updateWordsPreview('payoutDifference', 'wordsPayoutDifference');
       updateWordsPreview('billAmount', 'wordsBillAmount');
       updateWordsPreview('receivedInBank', 'wordsReceivedInBank');
+      updateWordsPreview('billShortfallAmt', 'wordsShortfall');
       updateWordsPreview('gstAmtPending', 'wordsGstAmtPending');
 
       document.getElementById('modalTitle').innerText = "Edit Client Case";
@@ -1300,15 +1403,24 @@
 
     async function deleteCase(id) {
       const target = CASES_DATA.find(c => c.id === id);
-      if (!confirm(`Pakka delete karna hai: ${target ? target.clientName : ''}?`)) return;
+      if (!confirm(`Delete case: ${target ? target.clientName : ''}?`)) return;
       CASES_DATA = CASES_DATA.filter(c => c.id !== id);
       renderCases();
       await pushToGitHub(CASES_DATA, `Deleted case ${id}`);
     }
 
     /* ==========================================================================
-       6. DASHBOARD & FILTERING LOGIC
+       7. COLLAPSIBLE CARD TOGGLE & RENDERING
        ========================================================================== */
+    function toggleCardCollapse(cardId) {
+      const cardEl = document.getElementById(cardId);
+      if (cardEl) {
+        const isExp = cardEl.classList.toggle('expanded');
+        const iconEl = cardEl.querySelector('.collapse-icon');
+        if (iconEl) iconEl.innerText = isExp ? 'Collapse ▲' : 'Details ▾';
+      }
+    }
+
     function formatCurrency(val) {
       return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val || 0);
     }
@@ -1332,34 +1444,63 @@
     function filterByStatus(statusType) {
       ACTIVE_STATUS_FILTER = statusType;
       document.querySelectorAll('.stat-card').forEach(el => el.classList.remove('active-filter'));
-      document.getElementById('resetFilterBtn').style.display = 'inline-flex';
 
       if (statusType === 'payout_pending') document.getElementById('cardPayoutPending').classList.add('active-filter');
       if (statusType === 'gst_pending') document.getElementById('cardGstPending').classList.add('active-filter');
       if (statusType === 'other_pending') document.getElementById('cardOtherPending').classList.add('active-filter');
       if (statusType === 'clear_closed') document.getElementById('cardClearClosed').classList.add('active-filter');
 
-      const filtered = CASES_DATA.filter(c => {
-        if (statusType === 'payout_pending') return isPendingCase(c, 'payout');
-        if (statusType === 'gst_pending') return isPendingCase(c, 'gst');
-        if (statusType === 'other_pending') return isPendingCase(c, 'other');
-        if (statusType === 'clear_closed') return isPendingCase(c, 'closed');
-        return true;
-      });
-      renderCases(filtered);
+      applyCombinedFilters();
     }
 
-    function resetStatusFilter() {
-      ACTIVE_STATUS_FILTER = null;
-      document.querySelectorAll('.stat-card').forEach(el => el.classList.remove('active-filter'));
-      document.getElementById('resetFilterBtn').style.display = 'none';
-      renderCases();
+    function setFollowupFilter(filterType, element) {
+      ACTIVE_FOLLOWUP_FILTER = filterType;
+      document.querySelectorAll('.filter-pill').forEach(el => el.classList.remove('active'));
+      element.classList.add('active');
+      applyCombinedFilters();
+    }
+
+    function applyCombinedFilters() {
+      let filtered = [...CASES_DATA];
+
+      if (ACTIVE_STATUS_FILTER) {
+        filtered = filtered.filter(c => {
+          if (ACTIVE_STATUS_FILTER === 'payout_pending') return isPendingCase(c, 'payout');
+          if (ACTIVE_STATUS_FILTER === 'gst_pending') return isPendingCase(c, 'gst');
+          if (ACTIVE_STATUS_FILTER === 'other_pending') return isPendingCase(c, 'other');
+          if (ACTIVE_STATUS_FILTER === 'clear_closed') return isPendingCase(c, 'closed');
+          return true;
+        });
+      }
+
+      if (ACTIVE_FOLLOWUP_FILTER !== 'all') {
+        filtered = filtered.filter(c => {
+          if (ACTIVE_FOLLOWUP_FILTER === 'shortfall') return (c.billShortfallAmt > 0);
+          if (ACTIVE_FOLLOWUP_FILTER === 'pending') return isPendingCase(c, 'payout') || isPendingCase(c, 'gst') || isPendingCase(c, 'other');
+          if (ACTIVE_FOLLOWUP_FILTER === 'closed') return isPendingCase(c, 'closed');
+          return true;
+        });
+      }
+
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      if (q) {
+        filtered = filtered.filter(c => {
+          return (c.clientName && c.clientName.toLowerCase().includes(q)) ||
+                 (c.corporateDsaName && c.corporateDsaName.toLowerCase().includes(q)) ||
+                 (c.connectorName && c.connectorName.toLowerCase().includes(q)) ||
+                 (c.bankProduct && c.bankProduct.toLowerCase().includes(q)) ||
+                 (c.billNo && c.billNo.toLowerCase().includes(q));
+        });
+      }
+
+      renderCases(filtered);
     }
 
     function renderCases(dataToRender = null) {
       const list = dataToRender || CASES_DATA;
       const container = document.getElementById('casesContainer');
 
+      // Top 4 Stats Calculation
       let countPayoutPending = 0;
       let totalGstPending = 0;
       let countOtherPending = 0;
@@ -1381,123 +1522,142 @@
         container.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--text-dim);">
             <h3>Koi Client Data Nahi Mila</h3>
-            <p style="margin-top: 6px; font-size: 0.85rem;">"+ Client Case" dabayein ya filter clear karein.</p>
+            <p style="margin-top: 6px; font-size: 0.82rem;">"+ Client Case" dabayein ya filter change karein.</p>
           </div>
         `;
         return;
       }
 
       container.innerHTML = list.map(c => {
-        const isPending = isPendingCase(c, 'payout') || isPendingCase(c, 'gst') || isPendingCase(c, 'other');
+        const hasShortfall = (c.billShortfallAmt && c.billShortfallAmt > 0);
+        const hasPending = isPendingCase(c, 'payout') || isPendingCase(c, 'gst') || isPendingCase(c, 'other');
+
         return `
-          <div class="case-card ${isPending ? 'pending-highlight' : ''}">
-            <div class="case-header">
-              <div>
-                <div class="case-title">${c.clientName || 'Unnamed Client'}</div>
-                <div class="client-meta">
-                  <span>🏢 DSA: ${c.corporateDsaName || 'Direct'}</span>
-                  <span>🤝 Connector: ${c.connectorName || 'None'}</span>
-                  ${c.clientMobile ? `<span>📞 ${c.clientMobile}</span>` : ''}
+          <div class="case-card ${hasPending || hasShortfall ? 'pending-highlight' : ''}" id="card_${c.id}">
+            
+            <!-- Collapsed Card Header (Always Visible Outward Info) -->
+            <div class="case-card-header" onclick="toggleCardCollapse('card_${c.id}')">
+              <div class="case-header-row">
+                <div>
+                  <div class="case-title">${c.clientName || 'Unnamed Client'}</div>
+                  <div class="client-meta">
+                    <span>🏢 DSA: ${c.corporateDsaName || 'Direct'}</span>
+                    <span>🤝 Connector: ${c.connectorName || 'None'}</span>
+                    ${c.clientMobile ? `<span>📞 ${c.clientMobile}</span>` : ''}
+                  </div>
                 </div>
-                <div style="margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                <div style="text-align: right;">
                   <span class="rating-stars">${getStarsHtml(c.clientRating || 5)}</span>
-                  <span style="font-size: 0.72rem; color: #fbbf24; font-weight: 700;">(${c.clientRating || 5}/5)</span>
+                  <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 2px;">${c.bankProduct || ''}</div>
                 </div>
               </div>
-              <span class="badge-pill ${c.receivedInBankStatus === 'Yes' ? 'pill-yes' : 'pill-pending'}">
-                Bank Recv: ${c.receivedInBankStatus || 'Yes'}
-              </span>
+
+              <!-- Important Outward Highlights visible without expanding -->
+              <div class="outward-summary-row">
+                <span class="out-pill out-pill-payout">DSA 90%: ${formatCurrency(c.dsaPayoutAmt90)}</span>
+                <span class="out-pill ${c.receivedInBank > 0 ? 'out-pill-recv' : 'out-pill-shortfall'}">
+                  Recv: ${formatCurrency(c.receivedInBank)} (${c.receivedInBankStatus || 'Yes'})
+                </span>
+                ${hasShortfall ? `<span class="out-pill out-pill-shortfall">⚠️ Shortfall: ${formatCurrency(c.billShortfallAmt)}</span>` : ''}
+                ${c.gstAmtPending > 0 ? `<span class="out-pill out-pill-gst">GST Pend: ${formatCurrency(c.gstAmtPending)}</span>` : ''}
+              </div>
+
+              <div class="collapse-indicator">
+                <span>Month: <strong>${c.disbursementMonth || '-'}</strong> | Sanction: <strong>${formatCurrency(c.sanctionAmt)}</strong></span>
+                <span class="collapse-icon" style="font-weight: 700; color: #3b82f6;">Details ▾</span>
+              </div>
             </div>
 
-            <div class="case-body-grid">
-              <div style="grid-column: 1 / -1;">
-                <div class="case-field-label">Bank & Product</div>
-                <div class="case-field-val" style="color: #60a5fa;">${c.bankProduct || 'No Bank Specified'}</div>
-              </div>
-              <div>
-                <div class="case-field-label">Disburse Month</div>
-                <div class="case-field-val">${c.disbursementMonth || '-'}</div>
-              </div>
-              <div>
-                <div class="case-field-label">Revenue Month</div>
-                <div class="case-field-val">${c.revenueMonth || '-'}</div>
-              </div>
-              <div>
-                <div class="case-field-label">Sanction Amt</div>
-                <div class="case-field-val">${formatCurrency(c.sanctionAmt)}</div>
-              </div>
-              <div>
-                <div class="case-field-label">Disb. Considered</div>
-                <div class="case-field-val">${formatCurrency(c.disbursementAmtConsidered)}</div>
-              </div>
-              <div>
-                <div class="case-field-label">DSA Payout (90%)</div>
-                <div class="case-field-val" style="color: #34d399;">${formatCurrency(c.dsaPayoutAmt90)}</div>
-              </div>
-              <div>
-                <div class="case-field-label">Amt Seen In App</div>
-                <div class="case-field-val ${c.amtSeenInAppStatus === 'Pending' ? 'pending-val' : ''}">
-                  ${formatCurrency(c.amtSeenInApp)} (${c.amtSeenInAppStatus || 'Yes'})
+            <!-- Expandable Detailed Body -->
+            <div class="case-expanded-body">
+              <div class="case-body-grid">
+                <div>
+                  <div class="case-field-label">Disb. Considered</div>
+                  <div class="case-field-val">${formatCurrency(c.disbursementAmtConsidered)}</div>
                 </div>
-              </div>
-              <div>
-                <div class="case-field-label">Received In Bank</div>
-                <div class="case-field-val ${c.receivedInBankStatus === 'Pending' ? 'pending-val' : ''}">
-                  ${formatCurrency(c.receivedInBank)} (${c.receivedInBankStatus || 'Yes'})
+                <div>
+                  <div class="case-field-label">Corporate Payout %</div>
+                  <div class="case-field-val">${c.corporatePayoutPercent || 0}%</div>
                 </div>
-              </div>
-              <div>
-                <div class="case-field-label">GST Amt Pending</div>
-                <div class="case-field-val ${c.gstAmtPendingStatus === 'Pending' ? 'pending-val' : ''}">
-                  ${formatCurrency(c.gstAmtPending)} (${c.gstAmtPendingStatus || 'Pending'})
+                <div>
+                  <div class="case-field-label">Extra Payback</div>
+                  <div class="case-field-val">${formatCurrency(c.extraPayback)}</div>
                 </div>
-              </div>
-              <div>
-                <div class="case-field-label">Bill Generated</div>
-                <div class="case-field-val ${c.billGenerated === 'Pending' ? 'pending-val' : ''}">${c.billGenerated} ${c.billNo ? '('+c.billNo+')' : ''}</div>
-              </div>
-              <div>
-                <div class="case-field-label">Bill Shortfall / Followup</div>
-                <div class="case-field-val ${c.billShortfallAmt > 0 ? 'pending-val' : ''}">${formatCurrency(c.billShortfallAmt)}</div>
-              </div>
-              ${c.remark ? `
-                <div style="grid-column: 1 / -1; margin-top: 4px;">
-                  <div class="case-field-label">Remark / Notes</div>
-                  <div class="case-field-val" style="font-weight: 400; font-size: 0.8rem; color: #cbd5e1;">${c.remark}</div>
+                <div>
+                  <div class="case-field-label">Company Rev 10%</div>
+                  <div class="case-field-val">${formatCurrency(c.copanyRevenue10)}</div>
                 </div>
-              ` : ''}
+                <div>
+                  <div class="case-field-label">Amt Seen In App</div>
+                  <div class="case-field-val ${c.amtSeenInAppStatus === 'Pending' ? 'pending-val' : ''}">
+                    ${formatCurrency(c.amtSeenInApp)} (${c.amtSeenInAppStatus || 'Yes'})
+                  </div>
+                </div>
+                <div>
+                  <div class="case-field-label">Payout Difference</div>
+                  <div class="case-field-val ${c.payoutDifference !== 0 ? 'pending-val' : ''}">${formatCurrency(c.payoutDifference)}</div>
+                </div>
+                <div>
+                  <div class="case-field-label">Bill / No / Date</div>
+                  <div class="case-field-val ${c.billGenerated === 'Pending' ? 'pending-val' : ''}">
+                    ${c.billGenerated} ${c.billNo ? '('+c.billNo+')' : ''} ${c.billDate ? '['+c.billDate+']' : ''}
+                  </div>
+                </div>
+                <div>
+                  <div class="case-field-label">Bill Amount</div>
+                  <div class="case-field-val">${formatCurrency(c.billAmount)}</div>
+                </div>
+                <div>
+                  <div class="case-field-label">Followup Shortfall</div>
+                  <div class="case-field-val ${hasShortfall ? 'pending-val' : ''}">${formatCurrency(c.billShortfallAmt)}</div>
+                </div>
+                <div>
+                  <div class="case-field-label">GST Status</div>
+                  <div class="case-field-val ${c.gstAmtPendingStatus === 'Pending' ? 'pending-val' : ''}">
+                    ${formatCurrency(c.gstAmtPending)} (${c.gstAmtPendingStatus || 'Pending'})
+                  </div>
+                </div>
+                <div>
+                  <div class="case-field-label">Company Confirm</div>
+                  <div class="case-field-val ${c.collectionConfirmationFromCompany === 'Pending' ? 'pending-val' : ''}">
+                    ${c.collectionConfirmationFromCompany || 'Pending'}
+                  </div>
+                </div>
+                <div>
+                  <div class="case-field-label">MCF ID / Connector Payout</div>
+                  <div class="case-field-val">${c.mcfId || '-'} / ${c.connecterPayoutWritten || '-'}</div>
+                </div>
+                ${c.corporateDsaContact ? `
+                  <div style="grid-column: 1 / -1;">
+                    <div class="case-field-label">DSA Contact Details</div>
+                    <div class="case-field-val">👤 ${c.corporateDsaContact}</div>
+                  </div>
+                ` : ''}
+                ${c.remark ? `
+                  <div style="grid-column: 1 / -1; margin-top: 4px;">
+                    <div class="case-field-label">Remark / Follow-up Notes</div>
+                    <div class="case-field-val" style="font-weight: 400; font-size: 0.8rem; color: var(--text-dim);">${c.remark}</div>
+                  </div>
+                ` : ''}
+              </div>
+
+              <div class="case-actions">
+                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.78rem;" onclick="openEditCaseModal('${c.id}')">✏️ Edit</button>
+                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.78rem;" onclick="deleteCase('${c.id}')">🗑️ Delete</button>
+              </div>
             </div>
 
-            <div class="case-actions">
-              <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.78rem;" onclick="openEditCaseModal('${c.id}')">✏️ Edit</button>
-              <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.78rem;" onclick="deleteCase('${c.id}')">🗑️ Delete</button>
-            </div>
           </div>
         `;
       }).join('');
     }
 
     function filterCases() {
-      const q = document.getElementById('searchInput').value.toLowerCase().trim();
-      if (!q) {
-        renderCases();
-        return;
-      }
-      const filtered = CASES_DATA.filter(c => {
-        return (c.clientName && c.clientName.toLowerCase().includes(q)) ||
-               (c.clientMobile && c.clientMobile.toLowerCase().includes(q)) ||
-               (c.corporateDsaName && c.corporateDsaName.toLowerCase().includes(q)) ||
-               (c.corporateDsaContact && c.corporateDsaContact.toLowerCase().includes(q)) ||
-               (c.connectorName && c.connectorName.toLowerCase().includes(q)) ||
-               (c.bankProduct && c.bankProduct.toLowerCase().includes(q)) ||
-               (c.mcfId && c.mcfId.toLowerCase().includes(q)) ||
-               (c.billNo && c.billNo.toLowerCase().includes(q));
-      });
-      renderCases(filtered);
+      applyCombinedFilters();
     }
 
     /* ==========================================================================
-       7. RESTORE, BACKUP & EXCEL EXPORT
+       8. BACKUP, RESTORE & EXCEL EXPORT
        ========================================================================== */
     async function downloadEncryptedBackup() {
       const cfg = getCloudConfig();
@@ -1580,7 +1740,7 @@
     }
 
     /* ==========================================================================
-       8. SHORTCUTS & INIT
+       9. SHORTCUTS & INITIALIZATION
        ========================================================================== */
     window.addEventListener('keydown', (e) => {
       const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
@@ -1593,6 +1753,8 @@
     });
 
     window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+
       const localMirror = localStorage.getItem('FFMS_LOCAL_BACKUP');
       if (localMirror) {
         try { CASES_DATA = JSON.parse(localMirror); renderCases(); } catch (e) {}
