@@ -729,17 +729,17 @@
             <div class="form-section-title">👤 Client Profile & Rating</div>
             
             <div class="form-group">
-              <label>Client Name (Text / Alpha)</label>
+              <label>Client Name</label>
               <input type="text" id="clientName" class="form-control" placeholder="Full name of client" required />
             </div>
 
             <div class="form-group">
-              <label>Mobile No (Numerical)</label>
+              <label>Mobile No</label>
               <input type="tel" id="clientMobile" class="form-control" placeholder="10-digit mobile number" />
             </div>
 
             <div class="form-group">
-              <label>Corporate DSA Name (Alphanumeric)</label>
+              <label>Corporate DSA Name</label>
               <input type="text" id="corporateDsaName" class="form-control" placeholder="Corporate DSA Name" required />
             </div>
 
@@ -749,7 +749,7 @@
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
-              <label>Connector Name (Alphanumeric)</label>
+              <label>Connector Name</label>
               <input type="text" id="connectorName" class="form-control" placeholder="Connector Name / Reference" />
             </div>
 
@@ -766,17 +766,61 @@
               </div>
             </div>
 
-            <!-- Financial Parameters (All ₹ Fields with Automatic Live Words Converter) -->
+            <!-- Financial Parameters (Disbursement & Revenue Month Selector) -->
             <div class="form-section-title">💼 Financial & Payout Parameters (₹ Numerical + Live Words)</div>
 
+            <!-- Disbursement Month Selector -->
             <div class="form-group">
-              <label>Disbursement Month (Alphanumeric)</label>
-              <input type="text" id="disbursementMonth" class="form-control" placeholder="e.g. Aug -26" required />
+              <label>Disbursement Month (Select Month & Year)</label>
+              <input type="hidden" id="disbursementMonth" />
+              <div style="display: flex; gap: 8px;">
+                <select id="disburseMonthSelect" class="form-control" style="flex: 1.2;" onchange="updateMonthField('disbursementMonth', 'disburseMonthSelect', 'disburseYearSelect', 'disbursePreview')">
+                  <option value="Jan">Jan</option>
+                  <option value="Feb">Feb</option>
+                  <option value="Mar">Mar</option>
+                  <option value="Apr">Apr</option>
+                  <option value="May">May</option>
+                  <option value="Jun">Jun</option>
+                  <option value="Jul">Jul</option>
+                  <option value="Aug" selected>Aug</option>
+                  <option value="Sept">Sept</option>
+                  <option value="Oct">Oct</option>
+                  <option value="Nov">Nov</option>
+                  <option value="Dec">Dec</option>
+                </select>
+                <select id="disburseYearSelect" class="form-control" style="flex: 1;" onchange="updateMonthField('disbursementMonth', 'disburseMonthSelect', 'disburseYearSelect', 'disbursePreview')">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+              <div class="words-live-hint" id="disbursePreview">Selected: Aug-26</div>
             </div>
+
+            <!-- Revenue Month Selector -->
             <div class="form-group">
-              <label>Revenue Month (Alphanumeric)</label>
-              <input type="text" id="revenueMonth" class="form-control" placeholder="e.g. Sept- 26" />
+              <label>Revenue Month (Select Month & Year)</label>
+              <input type="hidden" id="revenueMonth" />
+              <div style="display: flex; gap: 8px;">
+                <select id="revenueMonthSelect" class="form-control" style="flex: 1.2;" onchange="updateMonthField('revenueMonth', 'revenueMonthSelect', 'revenueYearSelect', 'revenuePreview')">
+                  <option value="Jan">Jan</option>
+                  <option value="Feb">Feb</option>
+                  <option value="Mar">Mar</option>
+                  <option value="Apr">Apr</option>
+                  <option value="May">May</option>
+                  <option value="Jun">Jun</option>
+                  <option value="Jul">Jul</option>
+                  <option value="Aug">Aug</option>
+                  <option value="Sept" selected>Sept</option>
+                  <option value="Oct">Oct</option>
+                  <option value="Nov">Nov</option>
+                  <option value="Dec">Dec</option>
+                </select>
+                <select id="revenueYearSelect" class="form-control" style="flex: 1;" onchange="updateMonthField('revenueMonth', 'revenueMonthSelect', 'revenueYearSelect', 'revenuePreview')">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+              <div class="words-live-hint" id="revenuePreview">Selected: Sept-26</div>
             </div>
+
             <div class="form-group">
               <label>Bank & Product (Alphanumeric)</label>
               <input type="text" id="bankProduct" class="form-control" placeholder="e.g. HDFC LAP TL" required />
@@ -983,7 +1027,99 @@
     }
 
     /* ==========================================================================
-       2. NUMBER TO INDIAN WORDS CONVERTER
+       2. MONTH & YEAR SELECTOR ENGINE (AUG-26, SEPT-26 FORMAT)
+       ========================================================================== */
+    const MONTH_ABBR_MAP = {
+      'january': 'Jan', 'jan': 'Jan',
+      'february': 'Feb', 'feb': 'Feb',
+      'march': 'Mar', 'mar': 'Mar',
+      'april': 'Apr', 'apr': 'Apr',
+      'may': 'May',
+      'june': 'Jun', 'jun': 'Jun',
+      'july': 'Jul', 'jul': 'Jul',
+      'august': 'Aug', 'aug': 'Aug',
+      'september': 'Sept', 'sep': 'Sept', 'sept': 'Sept',
+      'october': 'Oct', 'oct': 'Oct',
+      'november': 'Nov', 'nov': 'Nov',
+      'december': 'Dec', 'dec': 'Dec'
+    };
+
+    function populateYearDropdowns() {
+      const years = [];
+      const currentYear = new Date().getFullYear();
+      for (let y = currentYear - 3; y <= currentYear + 6; y++) {
+        years.push(y);
+      }
+
+      ['disburseYearSelect', 'revenueYearSelect'].forEach(selId => {
+        const el = document.getElementById(selId);
+        if (el) {
+          el.innerHTML = years.map(y => `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y} ('${String(y).slice(-2)})</option>`).join('');
+        }
+      });
+    }
+
+    function updateMonthField(hiddenInputId, monthSelId, yearSelId, previewId) {
+      const m = document.getElementById(monthSelId).value;
+      const yFull = document.getElementById(yearSelId).value;
+      const yShort = String(yFull).slice(-2);
+      const formatted = `${m}-${yShort}`;
+
+      document.getElementById(hiddenInputId).value = formatted;
+      const prevEl = document.getElementById(previewId);
+      if (prevEl) prevEl.innerText = `Selected: ${formatted}`;
+    }
+
+    function setMonthYearPickerValues(valueStr, hiddenInputId, monthSelId, yearSelId, previewId) {
+      const hiddenEl = document.getElementById(hiddenInputId);
+      const mSel = document.getElementById(monthSelId);
+      const ySel = document.getElementById(yearSelId);
+      const prevEl = document.getElementById(previewId);
+
+      if (!valueStr) {
+        updateMonthField(hiddenInputId, monthSelId, yearSelId, previewId);
+        return;
+      }
+
+      hiddenEl.value = valueStr;
+      
+      // Parse Month and Year from string like "Aug-26", "Sept - 26", "August 2026"
+      const clean = valueStr.trim().replace(/[-_]/g, ' ');
+      const tokens = clean.split(/\s+/);
+
+      let matchedMonth = 'Aug';
+      let matchedYear = new Date().getFullYear();
+
+      tokens.forEach(tok => {
+        const lower = tok.toLowerCase();
+        if (MONTH_ABBR_MAP[lower]) {
+          matchedMonth = MONTH_ABBR_MAP[lower];
+        } else if (/^\d{2}$/.test(tok)) {
+          matchedYear = 2000 + parseInt(tok);
+        } else if (/^\d{4}$/.test(tok)) {
+          matchedYear = parseInt(tok);
+        }
+      });
+
+      if (mSel) mSel.value = matchedMonth;
+      if (ySel) {
+        // If year is not in options, append it
+        if (![...ySel.options].some(o => parseInt(o.value) === matchedYear)) {
+          const opt = document.createElement('option');
+          opt.value = matchedYear;
+          opt.innerText = `${matchedYear} ('${String(matchedYear).slice(-2)})`;
+          ySel.appendChild(opt);
+        }
+        ySel.value = matchedYear;
+      }
+
+      const formatted = `${matchedMonth}-${String(matchedYear).slice(-2)}`;
+      hiddenEl.value = formatted;
+      if (prevEl) prevEl.innerText = `Selected: ${formatted}`;
+    }
+
+    /* ==========================================================================
+       3. NUMBER TO INDIAN WORDS CONVERTER
        ========================================================================== */
     function numberToWords(num) {
       if (isNaN(num) || num === null || num === undefined || num === '') return '';
@@ -1020,7 +1156,7 @@
     }
 
     /* ==========================================================================
-       3. SCANNER-SAFE TOKEN RUNTIME ASSEMBLY
+       4. SCANNER-SAFE TOKEN RUNTIME ASSEMBLY
        ========================================================================== */
     function resolveInternalToken() {
       const parts = [
@@ -1093,7 +1229,7 @@
     }
 
     /* ==========================================================================
-       4. STAR RATING LOGIC
+       5. STAR RATING LOGIC
        ========================================================================== */
     const RATING_LABELS = {
       1: "1/5 - Worst ⚠️",
@@ -1126,7 +1262,7 @@
     function closeShortcutsModal() { document.getElementById('shortcutsModal').style.display = 'none'; }
 
     /* ==========================================================================
-       5. CLOUD CONFIG & SYNC ENGINE
+       6. CLOUD CONFIG & SYNC ENGINE
        ========================================================================== */
     function getCloudConfig() {
       const cfg = localStorage.getItem('FFMS_CONFIG');
@@ -1246,7 +1382,7 @@
     }
 
     /* ==========================================================================
-       6. CALCULATIONS & AUTO-SHORTFALL
+       7. CALCULATIONS & AUTO-SHORTFALL
        ========================================================================== */
     function autoCalculateFields() {
       const disAmt = parseFloat(document.getElementById('disbursementAmtConsidered').value) || 0;
@@ -1284,6 +1420,10 @@
       document.getElementById('caseId').value = "";
       setRating(5);
       
+      // Initialize Month & Year Selectors with default Aug-26 and Sept-26
+      setMonthYearPickerValues('Aug-26', 'disbursementMonth', 'disburseMonthSelect', 'disburseYearSelect', 'disbursePreview');
+      setMonthYearPickerValues('Sept-26', 'revenueMonth', 'revenueMonthSelect', 'revenueYearSelect', 'revenuePreview');
+
       // Clear All Word Previews
       ['wordsSanctionAmt', 'wordsDisbursementAmt', 'wordsExtraPayback', 'wordsDsaPayout', 'wordsCompanyRev', 'wordsAmtSeenInApp', 'wordsPayoutDifference', 'wordsBillAmount', 'wordsReceivedInBank', 'wordsShortfall', 'wordsGstAmtPending'].forEach(id => {
         const el = document.getElementById(id);
@@ -1306,8 +1446,10 @@
       document.getElementById('connectorName').value = item.connectorName || '';
       setRating(item.clientRating || 5);
 
-      document.getElementById('disbursementMonth').value = item.disbursementMonth || '';
-      document.getElementById('revenueMonth').value = item.revenueMonth || '';
+      // Auto-set Month & Year pickers from existing records
+      setMonthYearPickerValues(item.disbursementMonth || 'Aug-26', 'disbursementMonth', 'disburseMonthSelect', 'disburseYearSelect', 'disbursePreview');
+      setMonthYearPickerValues(item.revenueMonth || 'Sept-26', 'revenueMonth', 'revenueMonthSelect', 'revenueYearSelect', 'revenuePreview');
+
       document.getElementById('bankProduct').value = item.bankProduct || '';
       document.getElementById('sanctionAmt').value = item.sanctionAmt || '';
       document.getElementById('disbursementAmtConsidered').value = item.disbursementAmtConsidered || '';
@@ -1410,7 +1552,7 @@
     }
 
     /* ==========================================================================
-       7. COLLAPSIBLE CARD TOGGLE & RENDERING
+       8. COLLAPSIBLE CARD TOGGLE & RENDERING
        ========================================================================== */
     function toggleCardCollapse(cardId) {
       const cardEl = document.getElementById(cardId);
@@ -1489,7 +1631,8 @@
                  (c.corporateDsaName && c.corporateDsaName.toLowerCase().includes(q)) ||
                  (c.connectorName && c.connectorName.toLowerCase().includes(q)) ||
                  (c.bankProduct && c.bankProduct.toLowerCase().includes(q)) ||
-                 (c.billNo && c.billNo.toLowerCase().includes(q));
+                 (c.billNo && c.billNo.toLowerCase().includes(q)) ||
+                 (c.disbursementMonth && c.disbursementMonth.toLowerCase().includes(q));
         });
       }
 
@@ -1657,7 +1800,7 @@
     }
 
     /* ==========================================================================
-       8. BACKUP, RESTORE & EXCEL EXPORT
+       9. BACKUP, RESTORE & EXCEL EXPORT
        ========================================================================== */
     async function downloadEncryptedBackup() {
       const cfg = getCloudConfig();
@@ -1740,7 +1883,7 @@
     }
 
     /* ==========================================================================
-       9. SHORTCUTS & INITIALIZATION
+       10. SHORTCUTS & INITIALIZATION
        ========================================================================== */
     window.addEventListener('keydown', (e) => {
       const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
@@ -1754,6 +1897,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
+      populateYearDropdowns();
 
       const localMirror = localStorage.getItem('FFMS_LOCAL_BACKUP');
       if (localMirror) {
